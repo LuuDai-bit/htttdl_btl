@@ -31,3 +31,14 @@ port:	5432
 database:	BTL_DB
 username:	postgres
 password:	HTTTDL58TH1
+
+#ten bang khi import vao pgadmin
+#Rule ten + _ + kieu du lieu
+    #boundary
+boundary_points 
+boundary_area
+boundary_lines
+    #airport
+airport_points
+    #bank
+world_bank_aid_points
