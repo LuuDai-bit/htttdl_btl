@@ -1,0 +1,1 @@
+/geoserver/ODVietnam/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ODVietnam:World_bank_aid_en&outputFormat=SHAPE-ZIP
