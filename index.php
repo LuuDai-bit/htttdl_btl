@@ -13,18 +13,33 @@
     <link rel="stylesheet" href="/libs/openlayers/css/ol.css" type="text/css" />
     <script src="/libs/openlayers/build/ol.js" type="text/javascript"></script>
     <script src="/libs/jquery/jquery-3.4.1.min.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body onload="initinizeMap()">
-    <div id="map" style="width: 80vw; height: 100vh;"></div>
+    <div id="map">Something wrong happened!</div>
+
     <?php
-        require_once 'pgsqlAPI.php'
+    require_once 'pgsqlAPI.php'
     ?>
+
     <script>
-        function initinizeMap(){
+        function initinizeMap() {
             //  this fun is empty
             //  test pushing this comment line
+            $('#map').html('Map is on loading!..');
         }
+        $(document).ready(function() {
+            $('#map').on({
+                'click': function() {
+                    // query here
+                },
+                'hover': function() {
+                    // pop-up here
+                }
+            });
+        });
     </script>
 </body>
 
