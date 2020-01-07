@@ -18,7 +18,7 @@
         <style>
             .ol-popup {
                 position: absolute;
-                background-color: white;
+                background-color:#dfe1e3;
                 filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
                 padding: 15px;
                 border-radius: 10px;
@@ -35,6 +35,7 @@
             }
             .ol-popup-closer:after {
                 content: "✖";
+                color:#37474f
             }
             #LoaderBalls__item{
                 width: 20px; 
@@ -56,8 +57,6 @@
                 border-radius: 50%; 
                 background: #37474f; 
                 animation: bouncing 0.4s 0.2s alternate infinite;
-
-                
             }
             #broad{
                 position:absolute;
@@ -69,6 +68,15 @@
                 align-items: center;
                 display:none;
                 box-sizing: border-box;
+            }
+            .layer{
+                position:absolute;
+                top:5px;
+                right:0px;
+                background-color:#ced7db;
+            }
+            .layer-child{
+                animation: movedL 0.7s;
             }
              @keyframes bouncing {
                 0% {
@@ -86,10 +94,21 @@
                     top:60%;height:550px;width:250px;
                 }
             }
+            @keyframes movedL {
+                0% {
+                    top:15px;height:0%;width:0%;
+                 }
+                50% {
+                    top:15px;height:50%;width:50%;
+                 }
+                100% {
+                    top:15px;height:100%;width:100%;
+                }
+            }
 
         </style>
     </head>
-    <body onload="initialize_map();">
+    <body onload="initialize_map();" style="background-color:#dfe1e3;font-family: Serif;">
         <table>
             <tr>
                 <td>
@@ -100,12 +119,17 @@
                     </div>
                 </td>
                 <td>
+                <div class="layer" >
+                    <div class="layer-child">
+                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> Layer Options</div>  
+                        <input type="checkbox"  id="cmr_roads" checked /><label for="cmr_roads">cmr_roads</label>
+                        <input type="checkbox" id="layersOSM" checked /><label for="layersOSM">layersOSM</label>
+                    </div>
+                </div>
                     <div id="broad">
                         <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROAD</div>
                         <div style="background-color:#ced7db;" >  
                             <button style="background-color:#ced7db ;color:#37474f" onclick="reset()">Reset</button>
-                            <input type="checkbox"  id="cmr_roads" checked /><label for="cmr_roads" class="form-check-label">cmr_roads</label>
-                            <input type="checkbox" id="layersOSM" checked /><label for="layersOSM" class="form-check-label">layersOSM</label>
                         </div>
                         <hr/>
                         <div id="broad-content" style="color:#4A4A4A;">
