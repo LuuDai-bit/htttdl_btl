@@ -7,7 +7,8 @@
         
         <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css" />
         <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
-       
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
         <!-- <link rel="stylesheet" href="http://localhost:8081/libs/openlayers/css/ol.css" type="text/css" />
         <script src="http://localhost:8081/libs/openlayers/build/ol.js" type="text/javascript"></script> -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -99,18 +100,21 @@
                     </div>
                 </td>
                 <td>
-                    <button onclick="Switch()">S</button>
                     <div id="broad">
-                    <div style="background-color:#37474f; color:white;font-weight: bold;"> BROAD</div>
-                    <div style="background-color:#ced7db;text-align:center;" >  <button style="background-color:#ced7db ;color:#37474f" onclick="reset()">Reset</button></div>
-                    <hr/>
-                        <div id="broad-content" style="color:#4A4A4A";>
+                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROAD</div>
+                        <div style="background-color:#ced7db;" >  
+                            <button style="background-color:#ced7db ;color:#37474f" onclick="reset()">Reset</button>
+                            <input type="checkbox"  id="cmr_roads" checked /><label for="cmr_roads" class="form-check-label">cmr_roads</label>
+                            <input type="checkbox" id="layersOSM" checked /><label for="layersOSM" class="form-check-label">layersOSM</label>
+                        </div>
+                        <hr/>
+                        <div id="broad-content" style="color:#4A4A4A;">
                         </div>
                         <div style="display: flex;justify-content: center;align-items: center;">
                             <div id="LoaderBalls__item" ></div>
                             <div id="LoaderBalls__item1"></div>
                             <div id="LoaderBalls__item2"></div>
-                         </div>
+                        </div>
                     </div>
                 </td>
                 
@@ -157,20 +161,8 @@
                     document.getElementById("LoaderBalls__item2").style.display = "block";
                     document.getElementById("broad-content").innerHTML="";
             }
-            
-            function initialize_map() {
-                closer.onclick = function() {
-                    overlay.setPosition(undefined);
-                    closer.blur();
-                    return false;
-                };
-                //*
-                layerBG = new ol.layer.Tile({
-                    source: new ol.source.OSM({}),
-                    visible: true
-                });
-                //*/
-                var layerCMRRoads = new ol.layer.Image({
+            var cmr_roads = new ol.layer.Group({
+                    layers: [ new ol.layer.Image({
                     source: new ol.source.ImageWMS({
                         ratio: 1,
                         url: 'http://localhost:8080/geoserver/example/wms?',
@@ -181,8 +173,28 @@
                             LAYERS: 'cmr_roads',
                         }
                     }),
-                    visible: true
-                });
+                })]
+            });
+            var layersOSM = new ol.layer.Group({
+                    layers: [
+                        new ol.layer.Tile({
+                            source: new ol.source.OSM()
+                        })
+                    ]
+            });
+            function initialize_map() {
+                closer.onclick = function() {
+                    overlay.setPosition(undefined);
+                    closer.blur();
+                    return false;
+                };
+                
+                //*
+                // layerBG = new ol.layer.Tile({
+                //     source: new ol.source.OSM({}),
+                // });
+                //*/
+                
                 var viewMap = new ol.View({
                     center: ol.proj.fromLonLat([mapLng, mapLat]),
                     zoom: mapDefaultZoom
@@ -192,7 +204,7 @@
                     overlays: [overlay],
                     target: "map",
                     layers: [
-                        layerBG, layerCMRRoads
+                        layersOSM,cmr_roads
                     ],
                     overlays: [overlay],
                     //layers: [layerDuongDiaGioi],
@@ -323,6 +335,27 @@
                     });
                 });      
             };
+            $("#cmr_roads").change(function () {
+                if($("#cmr_roads").is(":checked"))
+                {
+                    cmr_roads.setVisible(true);
+                }
+                else
+                {
+                    cmr_roads.setVisible(false);
+                }
+            });
+            $("#layersOSM").change(function () {
+                if($("#layersOSM").is(":checked"))
+                {
+                    layersOSM.setVisible(true);
+                }
+                else
+                {
+                    layersOSM.setVisible(false);
+                }
+            });
+            
         </script>
     </body>
 </html>
