@@ -43,21 +43,21 @@ function query($paPDO, $sql, $parameters)
     try {
         // Khai báo exception
         $paPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $paPDO->setAttribute(PDO::ATTR_EMULATE_PREPARES,true);
 
-        $stmt = $paPDO->prepare($sql);
+        $stmt = null;
 
         if ($parameters != null && count($parameters) > 0) {
-            $value = null;
-            $stmt->bindParam(":tablename", $value);
-            $value = 'boundary_area';
-            $stmt->execute();
+            $stmt = $paPDO->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $stmt->execute($parameters);
         } else {
+            $stmt = $paPDO->prepare($sql);
             $stmt->execute();
         }
 
 
         // Khai báo fetch kiểu mảng kết hợp
-        // $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         // Lấy danh sách kết quả
         $paResult = $stmt->fetchAll();
@@ -89,14 +89,15 @@ function getTables($con)
                 and table_name != 'spatial_ref_sys';";
     $result = query($con, $sql, null);
     // log debug
-    $array = array();
+    $array = [];
     if ($result != null) {
         foreach ($result as $row) {
             array_push($array, $row['table_name']);
         }
     }
     // return '['.implode(', ', $array).']';
-    return json_encode(array('tableNames' => $array));
+    // return json_encode(['tableNames' => $array]);
+    return $array;
 }
 /**
  * lay ra bien cua layout tu bang trong co so du lieu
@@ -106,12 +107,18 @@ function getTables($con)
  */
 function getBoundary($con, $tableName)
 {
-    $sql = "SELECT st_extent(geom) from :tablename ;";
-    $result = query($con, $sql, array(':tablename' => $tableName));
-    // $result = query($con, $sql, null);
-    // log debug
-    // echo 'getBoundary(): '.$result;
-    return json_encode($result[0]);
+    // nguyen nhan "select... from 'boundary_area';"
+    // $sql = "SELECT st_extent(geom) from :tablename ;";
+    // $result = query($con, $sql, [':tablename' => $tableName]);
+    $sql = "SELECT st_extent(geom) from $tableName;";
+    $result = query($con, $sql, null);
+
+    $result = $result[0]['st_extent'];
+    $firstPos = strpos($result, '(');
+    $lastPos = strpos($result, ')');
+    $str = substr($result, $firstPos + 1, $lastPos - $firstPos - 1);
+    $arr = explode(' ', $str);
+    return $arr;
 }
 /**
  * hien thi thong tin diem
@@ -119,10 +126,13 @@ function getBoundary($con, $tableName)
 function getInfoToAjax($con, $paPoint, $tableName)
 {
     $paPoint = str_replace(',', ' ', $paPoint);
+    // $sql = "SELECT id1, shape_leng, shape_area
+    //     from :tableName
+    //     where st_within(':paPoint'::geometry, geom);";
+    // $result = query($con, $sql, ['tableName' => $tableName, 'paPoint' => $paPoint]);
     $sql = "SELECT id1, shape_leng, shape_area
-        from :tableName
-        where st_within(':paPoint'::geometry, geom);";
-    $result = query($con, $sql, array('tableName' => $tableName, 'paPoint' => $paPoint));
-    echo 'getIntoToAjax' . $result;
-    return $result;
+        from $tableName
+        where st_within($paPoint::geometry, geom);";
+    $result = query($con, $sql, null);
+    return json_encode($result);
 }

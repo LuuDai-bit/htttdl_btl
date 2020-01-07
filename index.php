@@ -24,18 +24,36 @@
     <?php
     require_once 'pgsqlAPI.php';
     $G_con = initDB();
+    function csLog($message)
+    {
+        echo "<script>console.log('$message')</script>\n";
+    }
     ?>
     <?php
+    //  #test getTables
     $call1 = getTables($G_con);
-    echo "<script>console.log('$call1')</script>";
-    $arr = json_decode($call1);
-    foreach ($arr as $name) {
-        $call2 = getBoundary($G_con, $name);
-        echo "<script>console.log('$call2')</script>";
-    }
+    $arr = $call1;
+    csLog('[' . implode(', ', $arr) . ']');
+
+    //  #test getBoundary
+    $call2 = getBoundary($G_con, "boundary_area");
+    csLog('[' . implode(', ', $call2) . ']');
+
+    //  test getInfoToAjax
     ?>
 
     <script>
+        <?php
+        $arr = getBoundary($G_con, "boundary_area");
+        echo "var boundary = ".json_encode($arr).";\n";
+        ?>
+        
+        var cenX = (boundary[0] + boundary[2]) / 2;
+        var cenY = (boundary[1] + boundary[3]) / 2;
+        var mapLat = cenY;
+        var mapLng = cenX;
+        var mapDefaultZoom = 6;
+        var map;
         function initinizeMap() {
             //  this fun is empty
             //  test pushing this comment line
@@ -44,7 +62,7 @@
             layerBG = new ol.layer.Tile({
                 source: new ol.source.OSM({})
             });
-            var layer = new ol.layer.Image({
+            var upperLayer = new ol.layer.Image({
                 ratio: 1,
                 url: 'http://localhost:8080/geoserver/btl_workplace/wms?',
                 params: {
@@ -54,9 +72,35 @@
                     LAYERS: 'btl_workspace:boundary_area',
                 }
             });
-            // var viewMap = new ol.View({
-            //     center: ol.proj.fromLonLat([mapL])
-            // })
+            var viewMap = new ol.View({
+                center: ol.proj.fromLonLat([mapLng, mapLat]),
+                zoom: mapDefaultZoom
+            });
+            map = new ol.Map({
+                target: "map",
+                // layers: [layerBG, upperLayer],
+                layer: [layerBG],
+                view: viewMap
+            });
+            var styleFunction = function(feature) {
+                return styles[feature.getGeometry().getType()];
+            };
+            var vectorLayer = new ol.layer.Vector({
+                //source: vectorSource,
+                style: styleFunction
+            });
+            map.addLayer(vectorLayer);
+            var styles = {
+                'MultiPolygon': new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'orange'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'yellow',
+                        width: 2
+                    })
+                })
+            };
         }
         $(document).ready(function() {
             $('#map').on({
