@@ -1,23 +1,63 @@
 <?php
+if (isset($_POST['functionName'])) {
+    $con = initDB();
+    $paPoint = $_POST['paPoint'];
+    $tableName = $_POST['tableName'];
+    $functionName = $_POST['functionName'];
+
+    $result = 'null';
+    if ($functionName == 'getInfoToAjax') {
+        $result = getInfoToAjax($con, $paPoint, $tableName);
+    }
+    echo $result;
+
+    closeDB($paPoint);
+}
+
+/**
+ * Tao doi tuong PDO co san thong tin ket noi
+ * returns doi tuong PDO cua co so du lieu
+ */
 function initDB()
 {
+    $host = 'localhost';
+    $database = 'BTL_DB';
+    $port = '5432';
+    $user = 'postgres';
+    $password = 'HTTTDL58TH1';
     // Kết nối CSDL
-    $paPDO = new PDO('pgsql:host=localhost;dbname=BTL_DB;port=5432', 'postgres', 'HTTTDL58TH1');
+    $paPDO = new PDO("pgsql:host=$host;dbname=$database;port=$port", $user, $password);
     return $paPDO;
 }
-function query($paPDO, $paSQLStr)
+/**
+ * truy van sql vao co so du lieu
+ * $paPDO doi tuong co so du lieu
+ * $sql cau lenh truy van co the bind parameters
+ *  vidu: select * from :parameter1 where :parameter2 = value
+ * $parameters 1 mang key value cac ten parameter va gia tri cua chung
+ *  vidu: array('parameter1'=>'boundary_points', 'parameter2'=>'200')
+ * returns ket qua cua truy van
+ */
+function query($paPDO, $sql, $parameters)
 {
     try {
         // Khai báo exception
         $paPDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Sử đụng Prepare 
-        $stmt = $paPDO->prepare($paSQLStr);
-        // Thực thi câu truy vấn
-        $stmt->execute();
+        $stmt = $paPDO->prepare($sql);
+
+        if ($parameters != null && count($parameters) > 0) {
+            $value = null;
+            $stmt->bindParam(":tablename", $value);
+            $value = 'boundary_area';
+            $stmt->execute();
+        } else {
+            $stmt->execute();
+        }
+
 
         // Khai báo fetch kiểu mảng kết hợp
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        // $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         // Lấy danh sách kết quả
         $paResult = $stmt->fetchAll();
@@ -27,9 +67,62 @@ function query($paPDO, $paSQLStr)
         return null;
     }
 }
+/**
+ * dong co so du lieu
+ * $paPDO PDO csdl
+ */
 function closeDB($paPDO)
 {
     // Ngắt kết nối
     $paPDO = null;
 }
-?>
+/**
+ * lay ra tat ca cac bang trong co so du lieu
+ * $con PDO csdl
+ * returns cot ten cac bang trong co so du lieu
+ */
+function getTables($con)
+{
+    $sql = "SELECT table_name
+            from information_schema.tables 
+            where table_type = 'BASE TABLE' and table_schema='public' 
+                and table_name != 'spatial_ref_sys';";
+    $result = query($con, $sql, null);
+    // log debug
+    $array = array();
+    if ($result != null) {
+        foreach ($result as $row) {
+            array_push($array, $row['table_name']);
+        }
+    }
+    // return '['.implode(', ', $array).']';
+    return json_encode(array('tableNames' => $array));
+}
+/**
+ * lay ra bien cua layout tu bang trong co so du lieu
+ * $con PDO csdl
+ * $tableName ten bang (layout)
+ * returns mang gia tri [minX, minY, maxX, maxY]
+ */
+function getBoundary($con, $tableName)
+{
+    $sql = "SELECT st_extent(geom) from :tablename ;";
+    $result = query($con, $sql, array(':tablename' => $tableName));
+    // $result = query($con, $sql, null);
+    // log debug
+    // echo 'getBoundary(): '.$result;
+    return json_encode($result[0]);
+}
+/**
+ * hien thi thong tin diem
+ */
+function getInfoToAjax($con, $paPoint, $tableName)
+{
+    $paPoint = str_replace(',', ' ', $paPoint);
+    $sql = "SELECT id1, shape_leng, shape_area
+        from :tableName
+        where st_within(':paPoint'::geometry, geom);";
+    $result = query($con, $sql, array('tableName' => $tableName, 'paPoint' => $paPoint));
+    echo 'getIntoToAjax' . $result;
+    return $result;
+}
