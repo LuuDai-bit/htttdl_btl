@@ -1,13 +1,14 @@
 <?php
 if (isset($_POST['functionName'])) {
     $con = initDB();
+    $SRID = '4326';
     $paPoint = $_POST['paPoint'];
     $tableName = $_POST['tableName'];
     $functionName = $_POST['functionName'];
 
     $result = 'null';
     if ($functionName == 'getInfoToAjax') {
-        $result = getInfoToAjax($con, $paPoint, $tableName);
+        $result = getInfoToAjax($con, $paPoint, $tableName, $SRID);
     }
     echo $result;
 
@@ -117,22 +118,25 @@ function getBoundary($con, $tableName)
     $firstPos = strpos($result, '(');
     $lastPos = strpos($result, ')');
     $str = substr($result, $firstPos + 1, $lastPos - $firstPos - 1);
+    $str = str_replace(',', ' ', $str);
     $arr = explode(' ', $str);
     return $arr;
 }
 /**
  * hien thi thong tin diem
  */
-function getInfoToAjax($con, $paPoint, $tableName)
+function getInfoToAjax($con, $paPoint, $tableName, $SRID)
 {
+    if($SRID == null || $SRID == 0){
+        $SRID = '4326';
+    }
     $paPoint = str_replace(',', ' ', $paPoint);
     // $sql = "SELECT id1, shape_leng, shape_area
     //     from :tableName
-    //     where st_within(':paPoint'::geometry, geom);";
-    // $result = query($con, $sql, ['tableName' => $tableName, 'paPoint' => $paPoint]);
-    $sql = "SELECT id1, shape_leng, shape_area
+    //     where st_within('SRID=4326;$paPoint'::geometry, geom);";
+    $sql = "SELECT osm_id
         from $tableName
-        where st_within($paPoint::geometry, geom);";
-    $result = query($con, $sql, null);
+        where st_within(:param1::geometry, geom);";
+    $result = query($con, $sql, ['param1'=> "SRID=$SRID;$paPoint"]);
     return json_encode($result);
 }
