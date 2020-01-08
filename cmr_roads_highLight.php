@@ -285,7 +285,7 @@
                     $.ajax({
                         type: "POST",
                         url: "cmr_roads_pgsqlAPI.php",
-                        dataType:'json',
+                        // dataType:'json',
                         data: {functionname: 'getGeoCMRRoadsToAjax', paPoint: myPoint},
                         success : function (result, status, erro) {
                             highLightObj(result);
@@ -298,7 +298,7 @@
                     $.ajax({
                         type: "POST",
                         url: "cmr_roads_pgsqlAPI.php",
-                        dataType:'json',
+                        // dataType:'json',
                         data: {functionname: 'getCaculatorToAjax', paPoint: myPoint},
                         success : function (result, status, erro) {
                             displayObjInfo(result,evt.coordinate);
@@ -311,10 +311,11 @@
                     $.ajax({
                         type: "POST",
                         url: "cmr_roads_pgsqlAPI.php",
-                        dataType:'json',
+                        // dataType:'json',
                         data: {functionname: 'getInfoToAjax', paPoint: myPoint},
                         success : function (result, status, erro) {
                             displayObjInfoBroad(result,evt.coordinate);
+                            console.log(result);
                         },
                         error: function (req, status, error) {
                             alert(req + " " + status + " " + error);
