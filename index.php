@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bài tập lớn</title>
-
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css" />
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" type="text/javascript"></script>
@@ -35,21 +34,21 @@
                 content: "✖";
                 color:#37474f
             }
-            #LoaderBalls__item{
+            #LoaderBalls__item,#LoaderBalls__item3 {
                 width: 20px; 
                 height: 20px; 
                 border-radius: 50%; 
                 background: #37474f; 
                 animation: bouncing 0.4s alternate infinite;
             }
-            #LoaderBalls__item1{
+            #LoaderBalls__item1,#LoaderBalls__item4{
                 width: 20px; 
                 height: 20px; 
                 border-radius: 50%; 
                 background: #37474f; 
                 animation: bouncing 0.4s 0.1s alternate infinite;
             }
-            #LoaderBalls__item2{
+            #LoaderBalls__item2,#LoaderBalls__item5{
                 width: 20px; 
                 height: 20px; 
                 border-radius: 50%; 
@@ -60,7 +59,18 @@
                 position:absolute;
                 top:55%;height:350px;width:250px;
                 right:0px;
-                animation: moved 0.9s;
+                animation: moved 1s;
+                display: flex;
+	            justify-content: center;
+                align-items: center;
+                display:none;
+                box-sizing: border-box;
+            }
+            #broad1{
+                position:absolute;
+                top:10%;height:350px;width:250px;
+                right:0px;
+                animation: moved1 1.2s;
                 display: flex;
 	            justify-content: center;
                 align-items: center;
@@ -74,7 +84,7 @@
                 background-color:#ced7db;
             }
             .layer-child{
-                animation: movedL 0.7s;
+                animation: movedL 1s;
             }
              @keyframes bouncing {
                 0% {
@@ -90,6 +100,17 @@
                  }
                 100% {
                     top:60%;height:550px;width:250px;
+                }
+            }
+            @keyframes moved1 {
+                0% {
+                    top:15px;height:100px;width:10px;
+                 }
+                 50%{
+                    top:15px;height:10px;width:100px;
+                 }
+                100% {
+                    top:20%;height:550px;width:250px;
                 }
             }
             @keyframes movedL {
@@ -110,7 +131,7 @@
     <table>
             <tr>
                 <td>
-                    <div id="map" style="width: 80vw; height: 100vh;box-shadow: 5px 5px 10px 8px #888888; " ></div>
+                    <div id="map" style="width: 75vw; height: 100vh;box-shadow: 5px 5px 10px 8px #888888; " ></div>
                     <div id="popup" class="ol-popup">
                         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                         <div id="popup-content"></div>
@@ -122,10 +143,11 @@
                         <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> Layer Options</div>  
                         <input type="checkbox"  id="cmr_adm1" checked /><label for="cmr_adm1">cmr_adm1</label>
                         <input type="checkbox" id="layersOSM" checked /><label for="layersOSM">layersOSM</label>
+                        <input type="checkbox" id="cmr_roads" checked /><label for="cmr_roads">cmr_road</label>
                     </div>
                 </div>
                     <div id="broad">
-                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROAD</div>
+                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROADVung</div>
                         <div style="background-color:#ced7db;" >  
                             <button style="background-color:#ced7db ;color:#37474f" onclick="reset()">Reset</button>
                         </div>
@@ -138,11 +160,25 @@
                             <div id="LoaderBalls__item2"></div>
                         </div>
                     </div>
+                    <div id="broad1">
+                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROADDuong</div>
+                        <div style="background-color:#ced7db;" >  
+                            <button style="background-color:#ced7db ;color:#37474f" onclick="reset1()">Reset</button>
+                        </div>
+                        <hr/>
+                        <div id="broad-content1" style="color:#4A4A4A;">
+                        </div>
+                        <div style="display: flex;justify-content: center;align-items: center;">
+                            <div id="LoaderBalls__item3" ></div>
+                            <div id="LoaderBalls__item4"></div>
+                            <div id="LoaderBalls__item5"></div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </table>
     <?php
-        require_once 'cmr_roads_pgsqlAPI.php'
+        require_once 'pgsqlAPI.php'
     ?>
     <script>
         var format = 'image/png';
@@ -163,12 +199,19 @@
             element: container,
             autoPan: true,
         });
-        
+        var onOffDuong=true;
+        var onOffVung=true;
         function reset(){
             document.getElementById("LoaderBalls__item").style.display = "block";
             document.getElementById("LoaderBalls__item1").style.display = "block";
             document.getElementById("LoaderBalls__item2").style.display = "block";
              document.getElementById("broad-content").innerHTML="";
+        }
+        function reset1(){
+            document.getElementById("LoaderBalls__item3").style.display = "block";
+            document.getElementById("LoaderBalls__item4").style.display = "block";
+            document.getElementById("LoaderBalls__item5").style.display = "block";
+            document.getElementById("broad-content1").innerHTML="";
         }
         var cmr_adm1 = new ol.layer.Group({
             layers: [ new ol.layer.Image({
@@ -191,6 +234,18 @@
                 })
             ]
         });
+        var cmr_roads = new ol.layer.Image({
+                    source: new ol.source.ImageWMS({
+                        ratio: 1,
+                        url: 'http://localhost:8080/geoserver/example/wms?',
+                        params: {
+                            'FORMAT': format,
+                            'VERSION': '1.1.1',
+                            STYLES: '',
+                            LAYERS: 'cmr_roads',
+                        }
+                    })
+                });
         function initinizeMap(){
             closer.onclick = function() {
                 overlay.setPosition(undefined);
@@ -205,33 +260,45 @@
                 overlays: [overlay],
                 target: "map",
                 layers: [
-                    layersOSM,cmr_adm1
+                    layersOSM,cmr_adm1,cmr_roads
                 ],
                 overlays: [overlay],
                 view: viewMap
             });
             map.addOverlay(overlay);
-            var styles = {
+            var stylesDuong = {
                 'MultiLineString': new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: '#37474f', 
                         width: 3
                     })
                 }),
-                'Polygon': new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: '#37474f', 
-                         width: 3
+            };
+            var stylesVung = {
+                'MultiPolygon': new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: '#37474f'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: 'yellow', 
+                            width: 2
+                        })
                     })
-                })
             };
-            var styleFunction = function (feature) {
-                return styles[feature.getGeometry().getType()];
+            var styleFunctionDuong = function (feature) {
+                return stylesDuong[feature.getGeometry().getType()];
             };
-            var vectorLayer = new ol.layer.Vector({
-                style: styleFunction
+            var styleFunctionVung = function (feature) {
+                return stylesVung[feature.getGeometry().getType()];
+            };
+            var vectorLayerDuong = new ol.layer.Vector({
+                style: styleFunctionDuong
             });
-            map.addLayer(vectorLayer);
+            var vectorLayerVung = new ol.layer.Vector({
+                style: styleFunctionVung
+            });
+            map.addLayer(vectorLayerDuong);
+            map.addLayer(vectorLayerVung);
             function createJsonObj(result) {                    
                     var geojsonObject = '{'
                             + '"type": "FeatureCollection",'
@@ -253,55 +320,69 @@
                     content.innerHTML = result;
                     overlay.setPosition(coordinate);
                 }
-            function displayObjInfoBroad(result,coordinate )
+            function displayObjInfoBroadVung(result,coordinate )
                 {
+                    if(onOffVung==true){
                     document.getElementById("LoaderBalls__item").style.display = "none";
                     document.getElementById("LoaderBalls__item1").style.display = "none";
                     document.getElementById("LoaderBalls__item2").style.display = "none";
                     document.getElementById("broad").style.display = "block";
                     document.getElementById("broad-content").innerHTML=result;
+                    }
+                }
+            function displayObjInfoBroadDuong(result,coordinate )
+                {
+                    if(onOffDuong==true){
+                    document.getElementById("LoaderBalls__item3").style.display = "none";
+                    document.getElementById("LoaderBalls__item4").style.display = "none";
+                    document.getElementById("LoaderBalls__item5").style.display = "none";
+                    document.getElementById("broad1").style.display = "block";
+                    document.getElementById("broad-content1").innerHTML=result;
+                    }
                 }
                 
-            function highLightGeoJsonObj(paObjJson) {
+                
+            function highLightduong(paObjJson) {
                     var vectorSource = new ol.source.Vector({
                         features: (new ol.format.GeoJSON()).readFeatures(paObjJson, {
                             dataProjection: 'EPSG:4326',
                             featureProjection: 'EPSG:3857'
                         })
                     });
-					vectorLayer.setSource(vectorSource);
+					vectorLayerDuong.setSource(vectorSource);
+            }
+            function highLightvung(paObjJson) {
+                    var vectorSource = new ol.source.Vector({
+                        features: (new ol.format.GeoJSON()).readFeatures(paObjJson, {
+                            dataProjection: 'EPSG:4326',
+                            featureProjection: 'EPSG:3857'
+                        })
+                    });
+					vectorLayerVung.setSource(vectorSource);
             }
             function highLightObj(result) {
                     var strObjJson = createJsonObj(result);
                     var objJson = JSON.parse(strObjJson);
-                    highLightGeoJsonObj(objJson);
+                    if(onOffDuong==true)
+                    highLightduong(objJson);
+                    if(onOffVung==true)
+                    highLightvung(objJson);
                 }
             map.on('singleclick', function (evt) {
                     var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
                     var lon = lonlat[0];
                     var lat = lonlat[1];
                     var myPoint = 'POINT(' + lon + ' ' + lat + ')';
-                    //Tô màu
+                    
+                    //Hiện info của đường ra broad
                     $.ajax({
                         type: "POST",
-                        url: "cmr_roads_pgsqlAPI.php",
+                        url: "pgsqlAPI.php",
                         // dataType:'json',
-                        data: {functionname: 'getGeoCMRRoadsToAjax', paPoint: myPoint},
+                        data: {functionname: 'hienThiDuong', paPoint: myPoint},
                         success : function (result, status, erro) {
-                            highLightObj(result);
-                        },
-                        error: function (req, status, error) {
-                            alert(req + " " + status + " " + error);
-                        }
-                    });
-                    //Hiện popup về diện tích ,chu vi....
-                    $.ajax({
-                        type: "POST",
-                        url: "cmr_roads_pgsqlAPI.php",
-                        // dataType:'json',
-                        data: {functionname: 'getCaculatorToAjax', paPoint: myPoint},
-                        success : function (result, status, erro) {
-                            displayObjInfo(result,evt.coordinate);
+                            displayObjInfoBroadDuong(result,evt.coordinate);
+                            
                         },
                         error: function (req, status, error) {
                             alert(req + " " + status + " " + error);
@@ -310,31 +391,88 @@
                     //Hiện info của vùng ra broad
                     $.ajax({
                         type: "POST",
-                        url: "cmr_roads_pgsqlAPI.php",
+                        url: "pgsqlAPI.php",
                         // dataType:'json',
-                        data: {functionname: 'getInfoToAjax', paPoint: myPoint},
+                        data: {functionname: 'hienThiVung', paPoint: myPoint},
                         success : function (result, status, erro) {
-                            displayObjInfoBroad(result,evt.coordinate);
-                            console.log(result);
+                            displayObjInfoBroadVung(result,evt.coordinate);
                         },
                         error: function (req, status, error) {
                             alert(req + " " + status + " " + error);
                         }
-                        
                     });
-                });      
+                    //Tô màu vùng
+                    $.ajax({
+                        type: "POST",
+                        url: "pgsqlAPI.php",
+                        // dataType:'json',
+                        data: {functionname: 'toMauVung', paPoint: myPoint},
+                        success : function (result, status, erro) {
+                            highLightObj(result);
+                        },
+                        error: function (req, status, error) {
+                            alert(req + " " + status + " " + error);
+                        }
+                    });
+                    //Tô màu đường
+                    $.ajax({
+                        type: "POST",
+                        url: "pgsqlAPI.php",
+                        // dataType:'json',
+                        data: {functionname: 'toMauDuong', paPoint: myPoint},
+                        success : function (result, status, erro) {
+                            highLightObj(result);
+                        },
+                        error: function (req, status, error) {
+                            alert(req + " " + status + " " + error);
+                        }
+                    });
+                });       
+                map.on('dblclick', function (evt) {
+                    var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                    var lon = lonlat[0];
+                    var lat = lonlat[1];
+                    var myPoint = 'POINT(' + lon + ' ' + lat + ')';
+                    //Hiện popup về diện tích ,chu vi.... duong
+                    $.ajax({
+                        type: "POST",
+                        url: "pgsqlAPI.php",
+                        // dataType:'json',
+                        data: {functionname: 'tinhToanDuong', paPoint: myPoint},
+                        success : function (result, status, erro) {
+                            displayObjInfo(result,evt.coordinate);
+                        },
+                        error: function (req, status, error) {
+                            alert(req + " " + status + " " + error);
+                        }
+                    });
+                });  
             };
             $("#cmr_adm1").change(function () {
-                if($("#cmr_adm1").is(":checked"))
+                if($("#cmr_adm1").is(":checked")){
                     cmr_adm1.setVisible(true);
-                else
+                    onOffVung=true;
+                }
+                else{
                     cmr_adm1.setVisible(false);
+                    onOffVung=false;
+                }
             });
             $("#layersOSM").change(function () {
                 if($("#layersOSM").is(":checked"))
                     layersOSM.setVisible(true);
                 else
                     layersOSM.setVisible(false);
+            });
+            $("#cmr_roads").change(function () {
+                if($("#cmr_roads").is(":checked")){
+                    cmr_roads.setVisible(true);
+                    onOffDuong=true;
+                }
+                else{
+                    cmr_roads.setVisible(false);
+                    onOffDuong=false;
+                }
             });
     </script>
 </body>
