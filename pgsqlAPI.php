@@ -35,25 +35,29 @@
     }
     function my_query($conn, $query)
     {
-        if(func_num_args() == 2)
-            return pg_query($conn, $query) ;
+        if(func_num_args() == 2){
+            $que=pg_query($conn, $query);
+            $fet=pg_fetch_all($que);
+            return $fet ;
+        }
 
         $args = func_get_args();
         $params = array_splice($args, 2);
-        return pg_query_params($conn, $query, $params) ;
+        $q=pg_query_params($conn, $query, $params);
+        $f=pg_fetch_all($q);
+        return  $f;
     }
     function closeDB($connect)
     {
         // Ngắt kết nối
         pg_close($connect);
     }
-    function hienThiVung($paPDO,$paSRID,$paPoint)
+    function hienThiVung($connect,$paSRID,$paPoint)
     {
     
         $paPoint = str_replace(',', ' ', $paPoint);
         $mySQLStr = "SELECT id_1, shape_leng, shape_area from cmr_adm1 where ST_Within('SRID=".pg_escape_string($paSRID).";".pg_escape_string($paPoint)."'::geometry,geom)";
-        $arr = my_query($paPDO, $mySQLStr);
-        $result = pg_fetch_all($arr);
+        $result = my_query($connect, $mySQLStr);
         if ($result != null)
         {
             $resFin = '<table>';
@@ -70,16 +74,14 @@
         else
             return "null";
     }
-    function toMauVung($paPDO,$paSRID,$paPoint)
+    function toMauVung($connect,$paSRID,$paPoint)
     {
 
         $paPoint = str_replace(',', ' ', $paPoint);
     
         $mySQLStr = "SELECT ST_AsGeoJson(geom) as geo from \"cmr_adm1\" where ST_Within('SRID=".pg_escape_string($paSRID).";".pg_escape_string($paPoint)."'::geometry,geom)";
 
-        $arr = my_query($paPDO, $mySQLStr);
-        $result = pg_fetch_all($arr);
-        
+        $result = my_query($connect, $mySQLStr);
         if ($result != null)
         {
             // Lặp kết quả
@@ -90,17 +92,19 @@
         else
             return "null";
     }
-    function toMauDuong($paPDO,$paSRID,$paPoint)
+    function toMauDuong($connect,$paSRID,$paPoint)
     {
       
         $paPoint = str_replace(',', ' ', $paPoint);
         $strDistance = "ST_Distance('".$paPoint."',ST_AsText(geom))";
-        $strMinDistance = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) from cmr_roads";
-        $mySQLStr = "SELECT ST_AsGeoJson(geom) as geo from cmr_roads where ".$strDistance." = (".$strMinDistance.") and ".$strDistance." < 0.05";
-       
-        $arr = my_query($paPDO, $mySQLStr);
-        $result = pg_fetch_all($arr);
-        
+        $strMinDistance = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) as huhu   from cmr_roads";
+        $mySQLStr = "SELECT ST_AsGeoJson(geom) as geo from cmr_roads where cast(".$strDistance." as text) = ($1) and ".$strDistance." < 0.05";
+        $QstrMinDistance=my_query($connect,$strMinDistance);
+        foreach($QstrMinDistance as $itemstrMinDistance){
+            $result = my_query($connect, $mySQLStr,$itemstrMinDistance['huhu']);
+            break;
+
+        }
         if ($result != null)
         {
             // Lặp kết quả
@@ -111,13 +115,19 @@
         else
             return "null";
     }
-    function hienThiDuong($paPDO,$paSRID,$paPoint){
+    
+    function hienThiDuong($connect,$paSRID,$paPoint){
         $paPoint1 = str_replace(',', ' ', $paPoint);
-        $strDistance1 = "ST_Distance('".$paPoint."',ST_AsText(geom))";
-        $strMinDistance1 = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) from cmr_roads";
-        $info ="SELECT * from cmr_roads where ".$strDistance1." = (".$strMinDistance1.") and ".$strDistance1." < 0.05";
-        $arr = my_query($paPDO, $info);
-        $result1 = pg_fetch_all($arr);
+        echo $paPoint1;
+        $strDistance1 = " ST_Distance('".$paPoint1."',ST_AsText(geom))";
+        $strMinDistance1 = "SELECT min(".$strDistance1.") as haha from cmr_roads;";
+        $info ="SELECT * from cmr_roads where cast(".$strDistance1." as text) = ($1) and ".$strDistance1."< 0.05";
+        $a=my_query($connect,$strMinDistance1) ;
+        foreach($a as $item){
+             $result1 = my_query($connect, $info,$item['haha']);
+            break;
+        };
+        
         if ($result1 != null)
         {
             $resFin1 = '<table>';
@@ -137,7 +147,7 @@
         else
             return "null";
     }
-    function tinhToanDuong($paPDO,$paSRID,$paPoint)
+    function tinhToanDuong($connect,$paSRID,$paPoint)
     {
         //echo $paPoint;
         //echo "<br>";
@@ -145,13 +155,14 @@
         //echo $paPoint;
         //echo "<br>";
         $strDistance = "ST_Distance('".$paPoint."',ST_AsText(geom))";
-        $strMinDistance = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) from cmr_roads";
-        $mySQLStr = "SELECT gid, ST_Length(geom) as leng from cmr_roads where ".$strDistance." = (".$strMinDistance.") and ".$strDistance." < 0.05";
+        $strMinDistance = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) as haha from cmr_roads";
+        $mySQLStr = "SELECT gid, ST_Length(geom) as leng from cmr_roads where cast(".$strDistance." as text) = ($1) and ".$strDistance." < 0.05";
         
-        //echo $mySQLStr;
-        //echo "<br><br>";
-        $arr = my_query($paPDO, $mySQLStr);
-        $result = pg_fetch_all($arr);
+        $a=my_query($connect,$strMinDistance) ;
+        
+        foreach($a as $item){
+            $result = my_query($connect, $mySQLStr,$item['haha']);
+        };
         
         if ($result != null)
         {
