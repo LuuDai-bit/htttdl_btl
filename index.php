@@ -24,27 +24,37 @@
     <?php
     require_once 'pgsqlAPI.php';
     $G_con = initDB();
-    // function csLog($message)
-    // {
-    //     echo "<script>console.log('$message')</script>\n";
-    // }
-    // 
-    // //  #test getTables
-    // $call1 = getTables($G_con);
-    // $arr = $call1;
+    function csLog($message)
+    {
+        echo "<script>console.log('$message')</script>\n";
+    }
+
+    //  #test getTables
+    $call1 = getTables($G_con);
+    $arr = $call1;
     // csLog('[' . implode(', ', $arr) . ']');
+    csLog($arr);
 
-    // //  #test getBoundary
-    // $call2 = getBoundary($G_con, "boundary_area");
-    // csLog('[' . implode(', ', $call2) . ']');
+    //  #test getBoundary
+    $call2 = getBoundary($G_con, "boundary_area");
+    csLog($call2);
 
-    // //  test getInfoToAjax
+    //  #test getInfoArea
+    $paPoint = 'SRID=4326;POINT(105.91 21.3)';
+    $call3 = getInfoArea($G_con, $paPoint, 4326);
+    csLog($call3);
     ?>
-
+    <script>
+        <?php
+            $call = getTables($G_con);
+            echo "var arr = $call;\n";
+        ?>
+        console.log(arr);
+    </script>
     <script>
         <?php
         $arr = getBoundary($G_con, "boundary_area");
-        echo "var boundary = " . json_encode($arr) . ";\n";
+        echo "var boundary = $arr;\n";
         ?>
         var format = 'image/png';
         var map;
@@ -114,7 +124,7 @@
                 var lon = lonlat[0];
                 var lat = lonlat[1];
                 var myPoint = 'POINT(' + lon + ' ' + lat + ')';
-                console.log('request: '+ myPoint);
+                console.log('request: ' + myPoint);
                 $.ajax({
                     type: "POST",
                     url: "pgsqlAPI.php",
