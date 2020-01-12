@@ -52,8 +52,10 @@
         <?php
             $call = getTables($G_con);
             echo "var arr = $call;\n";
+            echo "var arr2 = $call3;\n";
         ?>
         console.log(arr);
+        console.log(arr2);
     </script>
     <script>
         <?php
