@@ -2,18 +2,29 @@
 if (isset($_POST['functionName'])) {
     $connect = initDB();
     $SRID = '4326';
-    $paPoint = $_POST['paPoint'];
-    $tableName = $_POST['tableName'];
     $functionName = $_POST['functionName'];
 
-    // $result = 'null';
+    $result = 'null';
     // if ($functionName == 'getInfoToAjax') {
     //     $result = getInfoToAjax($connect, $paPoint, $tableName, $SRID);
     // }
     switch ($functionName) {
         case 'getInfoToAjax':
+            $paPoint = $_POST['paPoint'];
+            $tableName = $_POST['tableName'];
             $result = getInfoToAjax($connect, $paPoint, $tableName, $SRID);
             break;
+        case 'getBoundary':
+            $tableName = $_POST['tableName'];
+            $result = getBoundary($connect, $tableName);
+            break;
+            case 'getInfoArea':
+                $paPoint = $_POST['paPoint'];
+                $result = getInfoArea($connect, $paPoint, $SRID);
+            break;
+            case 'getExtraInfoArea':
+                $paPoint = $_POST['paPoint'];
+                $result = getExtraInfoArea($connect, $paPoint, $SRID);
     }
     echo $result;
 
@@ -168,14 +179,15 @@ function getInfoArea($conn, $paPoint, $SRID)
  * tra ve: dan so, dien tich(km2 - string)
  * vi du: {"population":"7587800","area":"3370.82963823946"}
  */
-function getExtraInfoArea($conn, $paPoint, $SRID){
+function getExtraInfoArea($conn, $paPoint, $SRID)
+{
     // chuan bi truy van
     if ($SRID == null || $SRID == 0) {
         $SRID = '4326';
     }
     $paPoint = str_replace(',', ' ', $paPoint);
 
-    $sql1 = 
+    $sql1 =
         "SELECT population, st_area(geom::geography) / pow(10,6) as area
         from boundary_area 
         where st_within($1, geom) and admin_leve = '4'
@@ -186,4 +198,30 @@ function getExtraInfoArea($conn, $paPoint, $SRID){
     $sql2 = "SELECT * from hotel_points   limit 5;";
     $result = query($conn, $sql2);
     return json_encode($result);
+}
+/**
+ * tinh khoang cach
+ * dau vao point1, point2
+ * vi du POINT(0 1), POINT(0 0)
+ * tra ve khoang cach don vi met
+ */
+function st_distance($conn, $point1, $point2)
+{
+    $sql = "SELECT st_distance($1::geography, $2::geography);";
+    $result = query($conn, $sql, $point1, $point2);
+    return $result[0]['st_distance'];
+}
+/**
+ * tinh chieu dai cac diem
+ * dau vao la cac diem can cua duong
+ */
+function st_length($conn, $pointsArr){
+
+}
+/**
+ * tinh dien tich cac diem
+ * dau vao la cac diem cua bien polygon
+ */
+function st_area($conn, $pointsArr){
+    
 }
