@@ -41,21 +41,24 @@
 
     //  #test getInfoArea
     $paPoint = 'SRID=4326;POINT(105.91 21.3)';
-    $call3 = getInfoArea($G_con, $paPoint, 4326);
+    $call3 = getInfoArea($G_con, $paPoint, 4326, 4);
     csLog($call3);
 
     // #test getExtraInfoArea
-    $call4 = getExtraInfoArea($G_con, $paPoint, 4326);
+    $call4 = getExtraInfoArea($G_con, $paPoint, 4326, 4);
     csLog($call4);
     ?>
     <script>
         <?php
-            $call = getTables($G_con);
-            echo "var arr = $call;\n";
-            echo "var arr2 = $call3;\n";
+            echo "var arr1 = $call1;\n";
+            echo "var arr2 = $call2;\n";
+            echo "var arr3 = $call3;\n";
+            echo "var arr4 = $call4;\n";
         ?>
-        console.log(arr);
+        console.log(arr1);
         console.log(arr2);
+        console.log(arr3);
+        console.log(arr4);
     </script>
     <script>
         <?php

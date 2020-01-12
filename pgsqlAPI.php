@@ -18,13 +18,18 @@ if (isset($_POST['functionName'])) {
             $tableName = $_POST['tableName'];
             $result = getBoundary($connect, $tableName);
             break;
-            case 'getInfoArea':
-                $paPoint = $_POST['paPoint'];
-                $result = getInfoArea($connect, $paPoint, $SRID);
+        case 'getInfoArea':
+            $paPoint = $_POST['paPoint'];
+            $admLevel = $_POST['admLevel'];
+            $result = getInfoArea($connect, $paPoint, $SRID, $admLevel);
             break;
-            case 'getExtraInfoArea':
-                $paPoint = $_POST['paPoint'];
-                $result = getExtraInfoArea($connect, $paPoint, $SRID);
+        case 'getExtraInfoArea':
+            $paPoint = $_POST['paPoint'];
+            $admLevel = $_POST['admLevel'];
+            $result = getExtraInfoArea($connect, $paPoint, $SRID, $admLevel);
+            break;
+        default:
+            $result = 'wrong functionName';
     }
     echo $result;
 
@@ -139,10 +144,11 @@ function getInfoToAjax($con, $paPoint, $tableName, $SRID)
 }
 /**
  * truy van thong tin vung
+ * $paPoint: diem can truy van. $admLevel ['2' => 'country', '4' => 'city/province', '6' => 'district', '5,8,9,10,11,12' => 'others']
  * tra ve: ten vung, dien tich(kilomet vuong - string), so san bay(string), so ngan hang(string)
  * vidu: {"name":"Hà Nội","area":"3370.82963823946","airports":"2","banks":"54"}
  */
-function getInfoArea($conn, $paPoint, $SRID)
+function getInfoArea($conn, $paPoint, $SRID, $level)
 {
     // chuan bi truy van
     if ($SRID == null || $SRID == 0) {
@@ -154,9 +160,9 @@ function getInfoArea($conn, $paPoint, $SRID)
     $sql1 =
         "SELECT name, st_area(geom::geography) / pow(10,6) as area, geom
         from boundary_area 
-        where st_within($1, geom) and admin_leve = '4'
+        where st_within($1, geom) and admin_leve = $2
         limit 1;";
-    $query1 = query($conn, $sql1, $paPoint)[0];
+    $query1 = query($conn, $sql1, $paPoint, $level)[0];
 
     // dem so san bay cua vung
     $sql2 =
@@ -179,7 +185,7 @@ function getInfoArea($conn, $paPoint, $SRID)
  * tra ve: dan so, dien tich(km2 - string)
  * vi du: {"population":"7587800","area":"3370.82963823946"}
  */
-function getExtraInfoArea($conn, $paPoint, $SRID)
+function getExtraInfoArea($conn, $paPoint, $SRID, $admLevel)
 {
     // chuan bi truy van
     if ($SRID == null || $SRID == 0) {
@@ -190,9 +196,9 @@ function getExtraInfoArea($conn, $paPoint, $SRID)
     $sql1 =
         "SELECT population, st_area(geom::geography) / pow(10,6) as area
         from boundary_area 
-        where st_within($1, geom) and admin_leve = '4'
+        where st_within($1, geom) and admin_leve = $2
         limit 1;";
-    $query1 = query($conn, $sql1, $paPoint)[0];
+    $query1 = query($conn, $sql1, $paPoint, $admLevel)[0];
 
     $result = $query1;
     return json_encode($result);
@@ -213,13 +219,13 @@ function st_distance($conn, $point1, $point2)
  * tinh chieu dai cac diem
  * dau vao la cac diem can cua duong
  */
-function st_length($conn, $pointsArr){
-
+function st_length($conn, $pointsArr)
+{
 }
 /**
  * tinh dien tich cac diem
  * dau vao la cac diem cua bien polygon
  */
-function st_area($conn, $pointsArr){
-    
+function st_area($conn, $pointsArr)
+{
 }
