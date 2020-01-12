@@ -195,8 +195,6 @@ function getExtraInfoArea($conn, $paPoint, $SRID)
     $query1 = query($conn, $sql1, $paPoint)[0];
 
     $result = $query1;
-    $sql2 = "SELECT * from hotel_points   limit 5;";
-    $result = query($conn, $sql2);
     return json_encode($result);
 }
 /**
