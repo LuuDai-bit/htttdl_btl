@@ -43,6 +43,10 @@
     $paPoint = 'SRID=4326;POINT(105.91 21.3)';
     $call3 = getInfoArea($G_con, $paPoint, 4326);
     csLog($call3);
+
+    // #test getExtraInfoArea
+    $call4 = getExtraInfoArea($G_con, $paPoint, 4326);
+    csLog($call4);
     ?>
     <script>
         <?php

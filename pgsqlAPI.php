@@ -143,7 +143,8 @@ function getInfoArea($conn, $paPoint, $SRID)
     $sql1 =
         "SELECT name, st_area(geom::geography) / pow(10,6) as area, geom
         from boundary_area 
-        where st_within($1, geom) and admin_leve = '4';";
+        where st_within($1, geom) and admin_leve = '4'
+        limit 1;";
     $query1 = query($conn, $sql1, $paPoint)[0];
 
     // dem so san bay cua vung
@@ -154,12 +155,33 @@ function getInfoArea($conn, $paPoint, $SRID)
 
     // dem so ngan hang
     $sql3 =
-        "select count(*) as banks from world_bank_aid_points
+        "SELECT count(*) as banks from world_bank_aid_points
         where st_within(geom, $1);";
     $query3 = query($conn, $sql3, $query1['geom'])[0];
 
     // gom ket qua
     $result = array_merge(array_slice($query1, 0, 2), $query2, $query3);
-    $result = json_encode($result);
-    return $result;
+    return json_encode($result);
+}
+/**
+ * truy van thong tin them cua vung
+ * tra ve: dan so, dien tich(km2 - string)
+ * vi du: {"population":"7587800","area":"3370.82963823946"}
+ */
+function getExtraInfoArea($conn, $paPoint, $SRID){
+    // chuan bi truy van
+    if ($SRID == null || $SRID == 0) {
+        $SRID = '4326';
+    }
+    $paPoint = str_replace(',', ' ', $paPoint);
+
+    $sql1 = 
+        "SELECT population, st_area(geom::geography) / pow(10,6) as area
+        from boundary_area 
+        where st_within($1, geom) and admin_leve = '4'
+        limit 1;";
+    $query1 = query($conn, $sql1, $paPoint)[0];
+
+    $result = $query1;
+    return json_encode($result);
 }
