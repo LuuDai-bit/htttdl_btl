@@ -1,5 +1,4 @@
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,190 +7,95 @@
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css" />
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" type="text/javascript"></script>
-
-    <!-- <link rel="stylesheet" href="/libs/openlayers/css/ol.css" type="text/css" />
-    <script src="/libs/openlayers/build/ol.js" type="text/javascript"></script>
-    <script src="/libs/jquery/jquery-3.4.1.min.js" type="text/javascript"></script> -->
-    <style>
-            .ol-popup {
-                position: absolute;
-                background-color:#dfe1e3;
-                filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-                padding: 15px;
-                border-radius: 10px;
-                border: 1px solid #cccccc;
-                bottom: 12px;
-                left: -50px;
-                min-width: 280px;
-            }
-            .ol-popup-closer {
-                text-decoration: none;
-                position: absolute;
-                top: 2px;
-                right: 8px;
-            }
-            .ol-popup-closer:after {
-                content: "✖";
-                color:#37474f
-            }
-            #LoaderBalls__item,#LoaderBalls__item3 {
-                width: 20px; 
-                height: 20px; 
-                border-radius: 50%; 
-                background: #37474f; 
-                animation: bouncing 0.4s alternate infinite;
-            }
-            #LoaderBalls__item1,#LoaderBalls__item4{
-                width: 20px; 
-                height: 20px; 
-                border-radius: 50%; 
-                background: #37474f; 
-                animation: bouncing 0.4s 0.1s alternate infinite;
-            }
-            #LoaderBalls__item2,#LoaderBalls__item5{
-                width: 20px; 
-                height: 20px; 
-                border-radius: 50%; 
-                background: #37474f; 
-                animation: bouncing 0.4s 0.2s alternate infinite;
-            }
-            #broad{
-                position:absolute;
-                top:55%;height:350px;width:250px;
-                right:0px;
-                animation: moved 1s;
-                display: flex;
-	            justify-content: center;
-                align-items: center;
-                display:none;
-                box-sizing: border-box;
-            }
-            #broad1{
-                position:absolute;
-                top:10%;height:350px;width:250px;
-                right:0px;
-                animation: moved1 1.2s;
-                display: flex;
-	            justify-content: center;
-                align-items: center;
-                display:none;
-                box-sizing: border-box;
-            }
-            .layer{
-                position:absolute;
-                top:5px;
-                right:0px;
-                background-color:#ced7db;
-            }
-            .layer-child{
-                animation: movedL 1s;
-            }
-             @keyframes bouncing {
-                0% {
-                    transform: translate3d(0, 8px, 0) scale(1.2, 0.85);
-                 }
-                100% {
-                    transform: translate3d(0, -20px, 0) scale(0.9, 1.1);
-                }
-            }
-            @keyframes moved {
-                0% {
-                    top:15px;height:100px;width:200px;
-                 }
-                100% {
-                    top:60%;height:550px;width:250px;
-                }
-            }
-            @keyframes moved1 {
-                0% {
-                    top:15px;height:100px;width:10px;
-                 }
-                 50%{
-                    top:15px;height:10px;width:100px;
-                 }
-                100% {
-                    top:20%;height:550px;width:250px;
-                }
-            }
-            @keyframes movedL {
-                0% {
-                    top:15px;height:0%;width:0%;
-                 }
-                50% {
-                    top:15px;height:50%;width:50%;
-                 }
-                100% {
-                    top:15px;height:100%;width:100%;
-                }
-            }  
-        </style>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 
-<body onload="initinizeMap()" style="background-color:#dfe1e3;font-family: Serif;">
+<body onload="initinizeMap()" style="background-color:#dfe1e3;font-family: Serif;">        
     <table>
             <tr>
                 <td>
-                    <div id="map" style="width: 75vw; height: 100vh;box-shadow: 5px 5px 10px 8px #888888; " ></div>
+                    <div id="map" ></div>
                     <div id="popup" class="ol-popup">
                         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                         <div id="popup-content"></div>
                     </div>
                 </td>
                 <td>
-                <div class="layer" >
-                    <div class="layer-child">
-                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> Layer Options</div>  
-                        <input type="checkbox"  id="cmr_adm1" checked /><label for="cmr_adm1">cmr_adm1</label>
-                        <input type="checkbox" id="layersOSM" checked /><label for="layersOSM">layersOSM</label>
-                        <input type="checkbox" id="cmr_roads" checked /><label for="cmr_roads">cmr_road</label>
+                    <div class="layer" >
+                        <div class="layer-child">
+                            <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> Layer Options</div>  
+                            <input type="checkbox"  id="world_bank_aid_points"/><label for="world_bank_aid_points">world_bank_aid_points</label>
+                            <input type="checkbox" id="boundary_points"/><label for="boundary_points">boundary_points</label>
+                            <hr/>
+                            <input type="checkbox" id="boundary_area"/><label for="boundary_area">boundary_area</label>
+                            <input type="checkbox" id="boundary_lines"/><label for="boundary_lines">boundary_lines</label>
+                            <input type="checkbox" id="airport_points"/><label for="airport_points">airport_points</label>
+                            <hr/>
+                            <input type="checkbox" id="hotel_points"/><label for="hotel_points">hotel_points</label>
+                            <input type="checkbox" id="historic_battlefield"/><label for="historic_battlefield">historic_battlefield</label>
+                            <input type="checkbox" id="theme_park"/><label for="theme_park">theme_park</label>
+                        </div>
                     </div>
-                </div>
+                    <div class="Feature" >
+                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;">Feature Option</div>
+                        <div class="layer-child">
+                            <button type="button" class="btn btn-secondary" onclick="Caculate(true);" id="Information" >Information</button>
+                            <button type="button" class="btn btn-secondary" onclick="Caculate(false);"id="Caculate">Caculate</button>
+                            <div id="An" style="display:none">
+                                <hr/>
+                                <button type="button" class="btn btn-secondary" onclick="Perimeter()"id="Perimeter" >Perimeter</button>
+                                <button type="button" class="btn btn-secondary"id="Acreage" onclick="Acreage()">Acreage</button>
+                                <button type="button" class="btn btn-secondary"id="Distance" onclick="Distance()">Distance</button>
+                                <hr/>
+                                <button type="button" class="btn btn-secondary" onclick="submit()"id="submit">Submit</button>
+                            </div>
+                        </div>
+                    </div>
                     <div id="broad">
-                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROADVung</div>
-                        <div style="background-color:#ced7db;" >  
-                            <button style="background-color:#ced7db ;color:#37474f" onclick="reset()">Reset</button>
+                            <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> POPUP</div>
+                            <hr/>
+                            <div id="broad-content" style="color:#4A4A4A;">
+                            </div>
                         </div>
-                        <hr/>
-                        <div id="broad-content" style="color:#4A4A4A;">
-                        </div>
-                        <div style="display: flex;justify-content: center;align-items: center;">
-                            <div id="LoaderBalls__item" ></div>
-                            <div id="LoaderBalls__item1"></div>
-                            <div id="LoaderBalls__item2"></div>
-                        </div>
-                    </div>
-                    <div id="broad1">
-                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> BROADDuong</div>
+                    <div id="broad1" style="top:50%;">
+                        <div style="background-color:#37474f; color:white;font-weight: bold;text-align:center;"> Information broad</div>
                         <div style="background-color:#ced7db;" >  
                             <button style="background-color:#ced7db ;color:#37474f" onclick="reset1()">Reset</button>
                         </div>
                         <hr/>
-                        <div id="broad-content1" style="color:#4A4A4A;">
-                        </div>
-                        <div style="display: flex;justify-content: center;align-items: center;">
+                        <div id="broad-content1" style="color:#4A4A4A;"></div>
+                        <div style="display: flex;justify-content:center;align-items: center;">
                             <div id="LoaderBalls__item3" ></div>
                             <div id="LoaderBalls__item4"></div>
                             <div id="LoaderBalls__item5"></div>
                         </div>
-                    </div>
+                    </div> 
                 </td>
             </tr>
         </table>
+    <script src="dienTich.js" type="text/javascript"></script> 
     <?php
         require_once 'pgsqlAPI.php'
     ?>
     <script>
+        <?php
+        $G_con = initDB();
+        $arr = getBoundary($G_con, "boundary_area");
+        echo "var boundary = $arr;\n";
+        ?>
         var format = 'image/png';
         var map;
-        var minX = 8.8262996673584;
-        var minY = 1.97410714626312;
-        var maxX = 15.5927391052246;
-        var maxY = 12.7209100723267;
-        var cenX = (minX + maxX) / 2;
-        var cenY = (minY + maxY) / 2;
+        boundary = boundary.map(function(i) {
+            return parseInt(i, 10);
+        });
+        var format = 'image/png';
+        var map;
+        var cenX = (boundary[0] + boundary[2]) / 2;
+        var cenY = (boundary[1] + boundary[3]) / 2;
         var mapLat = cenY;
         var mapLng = cenX;
-        var mapDefaultZoom = 7;
+        var mapDefaultZoom = 6;
         var container = document.getElementById('popup');
         var content = document.getElementById('popup-content');
         var closer = document.getElementById('popup-closer');
@@ -199,33 +103,48 @@
             element: container,
             autoPan: true,
         });
-        var onOffDuong=true;
-        var onOffVung=true;
-        function reset(){
-            document.getElementById("LoaderBalls__item").style.display = "block";
-            document.getElementById("LoaderBalls__item1").style.display = "block";
-            document.getElementById("LoaderBalls__item2").style.display = "block";
-             document.getElementById("broad-content").innerHTML="";
-        }
+        var hotel=false;var his=false;var park=false;
         function reset1(){
             document.getElementById("LoaderBalls__item3").style.display = "block";
             document.getElementById("LoaderBalls__item4").style.display = "block";
             document.getElementById("LoaderBalls__item5").style.display = "block";
             document.getElementById("broad-content1").innerHTML="";
         }
-        var cmr_adm1 = new ol.layer.Group({
-            layers: [ new ol.layer.Image({
+        var hotel_styles = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 0.5],
+                anchorXUnits: "fraction",
+                anchorYUnits: "fraction",
+                src: "../icons8-condo-48.png",
+            })
+        });
+        var historic_battlefield_styles = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 0.5],
+                anchorXUnits: "fraction",
+                anchorYUnits: "fraction",
+                src: "../icons8-mark-iv-tank-48.png",
+            })
+        });
+        var theme_park_styles = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 0.5],
+                anchorXUnits: "fraction",
+                anchorYUnits: "fraction",
+                src: "../icons8-theme-park-48.png",
+            })
+        });
+        var airport_points = new ol.layer.Image({
              source: new ol.source.ImageWMS({
-                    ratio: 1,
-                    url: 'http://localhost:8080/geoserver/example/wms?',
-                    params: {
-                        'FORMAT': format,
-                        'VERSION': '1.1.1',
-                        STYLES: '',
-                        LAYERS: 'cmr_adm1',
-                    }
-                }),
-            })]
+                ratio: 1,
+                url: 'http://localhost:8080/geoserver/btl_workspace/wms?',
+                params: {
+                    'FORMAT': format,
+                    'VERSION': '1.1.1',
+                    STYLES: '',
+                    LAYERS: 'airport_points',
+                }
+            }),
         });
         var layersOSM = new ol.layer.Group({
             layers: [
@@ -234,18 +153,76 @@
                 })
             ]
         });
-        var cmr_roads = new ol.layer.Image({
-                    source: new ol.source.ImageWMS({
-                        ratio: 1,
-                        url: 'http://localhost:8080/geoserver/example/wms?',
-                        params: {
-                            'FORMAT': format,
-                            'VERSION': '1.1.1',
-                            STYLES: '',
-                            LAYERS: 'cmr_roads',
-                        }
-                    })
-                });
+        var boundary_lines = new ol.layer.Image({
+             source: new ol.source.ImageWMS({
+                ratio: 1,
+                url: 'http://localhost:8080/geoserver/btl_workspace/wms?',
+                params: {
+                    'FORMAT': format,
+                    'VERSION': '1.1.1',
+                    STYLES: '',
+                    LAYERS: 'boundary_lines',
+                }
+            }),
+        });
+        var boundary_area = new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+                ratio: 1,
+                url: 'http://localhost:8080/geoserver/btl_workspace/wms?',
+                params: {
+                    'FORMAT': format,
+                    'VERSION': '1.1.1',
+                    STYLES: '',
+                    LAYERS: 'boundary_area',
+                }
+            }),
+        });
+        var boundary_points = new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+                ratio: 1,
+                url: 'http://localhost:8080/geoserver/btl_workspace/wms?',
+                params: {
+                    'FORMAT': format,
+                    'VERSION': '1.1.1',
+                    STYLES: '',
+                    LAYERS: 'boundary_points',
+                }
+            }),
+        });
+                
+        var hotel_points = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: '../data/countries.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style:hotel_styles
+        });
+        var historic_battlefield = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: '../data/historic_battlefield.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style:historic_battlefield_styles
+        });
+        var theme_park = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: '../data/theme_park.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style:theme_park_styles
+        });
+        var world_bank_aid_points = new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+                ratio: 1,
+                url: 'http://localhost:8080/geoserver/btl_workspace/wms?',
+                params: {
+                    'FORMAT': format,
+                    'VERSION': '1.1.1',
+                    STYLES: '',
+                    LAYERS: 'world_bank_aid_points',
+                }
+            }),
+        });
         function initinizeMap(){
             closer.onclick = function() {
                 overlay.setPosition(undefined);
@@ -260,220 +237,180 @@
                 overlays: [overlay],
                 target: "map",
                 layers: [
-                    layersOSM,cmr_adm1,cmr_roads
+                    layersOSM,boundary_area,boundary_lines,airport_points,hotel_points,
+                    boundary_points,historic_battlefield,theme_park,world_bank_aid_points
                 ],
                 overlays: [overlay],
                 view: viewMap
             });
             map.addOverlay(overlay);
-            var stylesDuong = {
-                'MultiLineString': new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: '#37474f', 
-                        width: 3
-                    })
-                }),
-            };
-            var stylesVung = {
-                'MultiPolygon': new ol.style.Style({
-                        fill: new ol.style.Fill({
-                            color: '#37474f'
-                        }),
-                        stroke: new ol.style.Stroke({
-                            color: 'yellow', 
-                            width: 2
-                        })
-                    })
-            };
-            var styleFunctionDuong = function (feature) {
-                return stylesDuong[feature.getGeometry().getType()];
-            };
-            var styleFunctionVung = function (feature) {
-                return stylesVung[feature.getGeometry().getType()];
-            };
-            var vectorLayerDuong = new ol.layer.Vector({
-                style: styleFunctionDuong
-            });
-            var vectorLayerVung = new ol.layer.Vector({
-                style: styleFunctionVung
-            });
-            map.addLayer(vectorLayerDuong);
-            map.addLayer(vectorLayerVung);
-            function createJsonObj(result) {                    
-                    var geojsonObject = '{'
-                            + '"type": "FeatureCollection",'
-                            + '"crs": {'
-                                + '"type": "name",'
-                                + '"properties": {'
-                                    + '"name": "EPSG:4326"'
-                                + '}'
-                            + '},'
-                            + '"features": [{'
-                                + '"type": "Feature",'
-                                + '"geometry": ' + result
-                            + '}]'
-                        + '}';
-                    return geojsonObject;
+
+            function popUp(result,coordinate ){   
+                var kq="";
+                Object.keys(result).forEach(function(item){
+                    kq=kq+item+" : "+result[item]+"<hr/>";
+                });
+                content.innerHTML=kq;
+                overlay.setPosition(coordinate);
             }
-            function displayObjInfo(result,coordinate )
-                {
-                    content.innerHTML = result;
-                    overlay.setPosition(coordinate);
-                }
+            
             function displayObjInfoBroadVung(result,coordinate )
-                {
-                    if(onOffVung==true){
-                    document.getElementById("LoaderBalls__item").style.display = "none";
-                    document.getElementById("LoaderBalls__item1").style.display = "none";
-                    document.getElementById("LoaderBalls__item2").style.display = "none";
-                    document.getElementById("broad").style.display = "block";
-                    document.getElementById("broad-content").innerHTML=result;
-                    }
-                }
-            function displayObjInfoBroadDuong(result,coordinate )
-                {
-                    if(onOffDuong==true){
+                {     
                     document.getElementById("LoaderBalls__item3").style.display = "none";
                     document.getElementById("LoaderBalls__item4").style.display = "none";
                     document.getElementById("LoaderBalls__item5").style.display = "none";
                     document.getElementById("broad1").style.display = "block";
                     document.getElementById("broad-content1").innerHTML=result;
-                    }
-                }
-                
-                
-            function highLightduong(paObjJson) {
-                    var vectorSource = new ol.source.Vector({
-                        features: (new ol.format.GeoJSON()).readFeatures(paObjJson, {
-                            dataProjection: 'EPSG:4326',
-                            featureProjection: 'EPSG:3857'
-                        })
-                    });
-					vectorLayerDuong.setSource(vectorSource);
-            }
-            function highLightvung(paObjJson) {
-                    var vectorSource = new ol.source.Vector({
-                        features: (new ol.format.GeoJSON()).readFeatures(paObjJson, {
-                            dataProjection: 'EPSG:4326',
-                            featureProjection: 'EPSG:3857'
-                        })
-                    });
-					vectorLayerVung.setSource(vectorSource);
-            }
-            function highLightObj(result) {
-                    var strObjJson = createJsonObj(result);
-                    var objJson = JSON.parse(strObjJson);
-                    if(onOffDuong==true)
-                    highLightduong(objJson);
-                    if(onOffVung==true)
-                    highLightvung(objJson);
                 }
             map.on('singleclick', function (evt) {
                     var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
                     var lon = lonlat[0];
                     var lat = lonlat[1];
                     var myPoint = 'POINT(' + lon + ' ' + lat + ')';
+                    let npoint = {
+                        'longtitude': lon,
+                        'latitude': lat
+                    }
+                if(mode){
+                    //popup
+                    $.ajax({
+                        type: "POST",
+                        url: "pgsqlAPI.php",
+                        // dataType: 'json',
+                        data: {functionName: 'getInfoArea', paPoint: myPoint,admLevel:4},
+                        success : function (result, status, error) {
+                            var kq =JSON.parse(result);
+                            popUp(kq,evt.coordinate);
+                           
+                        },
+                        error: function (req, status, error) {
+                            alert(req + " " + status + " " + error);
+                        }
+                    });
+                    //xem thêm
+                    // $.ajax({
+                    //     type: "POST",
+                    //     url: "pgsqlAPI.php",
+                    //     dataType:'json',
+                    //     data: {functionname: 'getExtraInfoArea', paPoint: myPoint},
+                    //     success : function (result, status, erro) {
+                    //         displayObjInfoBroadVung(result,evt.coordinate);
+                    //     },
+                    //     error: function (req, status, error) {
+                    //         alert(req + " " + status + " " + error);
+                    //     }
+                    // });
+                    // $.ajax({
+                    //     type: "POST",
+                    //     url: "pgsqlAPI.php",
+                    //     dataType:'json',
+                    //     data: {functionname: 'getExtraInfoArea', paPoint: myPoint},
+                    //     success : function (result, status, erro) {
+                    //         displayObjInfoBroadVung(result,evt.coordinate);
+                    //     },
+                    //     error: function (req, status, error) {
+                    //         alert(req + " " + status + " " + error);
+                    //     }
+                    // });
+                    }
                     
-                    //Hiện info của đường ra broad
-                    $.ajax({
-                        type: "POST",
-                        url: "pgsqlAPI.php",
-                        // dataType:'json',
-                        data: {functionname: 'hienThiDuong', paPoint: myPoint},
-                        success : function (result, status, erro) {
-                            displayObjInfoBroadDuong(result,evt.coordinate);
-                            
-                        },
-                        error: function (req, status, error) {
-                            alert(req + " " + status + " " + error);
-                        }
-                    });
-                    //Hiện info của vùng ra broad
-                    $.ajax({
-                        type: "POST",
-                        url: "pgsqlAPI.php",
-                        // dataType:'json',
-                        data: {functionname: 'hienThiVung', paPoint: myPoint},
-                        success : function (result, status, erro) {
-                            displayObjInfoBroadVung(result,evt.coordinate);
-                        },
-                        error: function (req, status, error) {
-                            alert(req + " " + status + " " + error);
-                        }
-                    });
-                    //Tô màu vùng
-                    $.ajax({
-                        type: "POST",
-                        url: "pgsqlAPI.php",
-                        // dataType:'json',
-                        data: {functionname: 'toMauVung', paPoint: myPoint},
-                        success : function (result, status, erro) {
-                            highLightObj(result);
-                        },
-                        error: function (req, status, error) {
-                            alert(req + " " + status + " " + error);
-                        }
-                    });
-                    //Tô màu đường
-                    $.ajax({
-                        type: "POST",
-                        url: "pgsqlAPI.php",
-                        // dataType:'json',
-                        data: {functionname: 'toMauDuong', paPoint: myPoint},
-                        success : function (result, status, erro) {
-                            highLightObj(result);
-                        },
-                        error: function (req, status, error) {
-                            alert(req + " " + status + " " + error);
-                        }
-                    });
-                });       
-                map.on('dblclick', function (evt) {
-                    var lonlat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-                    var lon = lonlat[0];
-                    var lat = lonlat[1];
-                    var myPoint = 'POINT(' + lon + ' ' + lat + ')';
-                    //Hiện popup về diện tích ,chu vi.... duong
-                    $.ajax({
-                        type: "POST",
-                        url: "pgsqlAPI.php",
-                        // dataType:'json',
-                        data: {functionname: 'tinhToanDuong', paPoint: myPoint},
-                        success : function (result, status, erro) {
-                            displayObjInfo(result,evt.coordinate);
-                        },
-                        error: function (req, status, error) {
-                            alert(req + " " + status + " " + error);
-                        }
-                    });
-                });  
-            };
-            $("#cmr_adm1").change(function () {
-                if($("#cmr_adm1").is(":checked")){
-                    cmr_adm1.setVisible(true);
-                    onOffVung=true;
+                    else {
+                        tinhDienTich(npoint);
+                    }
+            })
+            
+            map.on("moveend", function() {
+                var zoom = parseInt(map.getView().getZoom(),10);
+                if(zoom>=8 && hotel==true){
+                    hotel_points.setVisible(true);
+                }
+                else hotel_points.setVisible(false);
+                if(zoom>=8 && his==true){
+                    historic_battlefield.setVisible(true);
+                }
+                else historic_battlefield.setVisible(false);
+                if(zoom>=8 && park==true){
+                    theme_park.setVisible(true);
+                }
+                else theme_park.setVisible(false);
+            });
+        }
+        $( document ).ready(function() {
+            world_bank_aid_points.setVisible(false);
+            airport_points.setVisible(false);
+            boundary_points.setVisible(false);
+            boundary_area.setVisible(false);
+            boundary_lines.setVisible(false);
+            historic_battlefield.setVisible(false);
+            theme_park.setVisible(false);
+            hotel_points.setVisible(false);
+        });
+        
+            $("#world_bank_aid_points").change(function () {
+                if($("#world_bank_aid_points").is(":checked")){
+                    world_bank_aid_points.setVisible(true);
                 }
                 else{
-                    cmr_adm1.setVisible(false);
-                    onOffVung=false;
+                    world_bank_aid_points.setVisible(false);
                 }
             });
-            $("#layersOSM").change(function () {
-                if($("#layersOSM").is(":checked"))
-                    layersOSM.setVisible(true);
+            $("#airport_points").change(function () {
+                if($("#airport_points").is(":checked"))
+                    airport_points.setVisible(true);
                 else
-                    layersOSM.setVisible(false);
+                    airport_points.setVisible(false);
             });
-            $("#cmr_roads").change(function () {
-                if($("#cmr_roads").is(":checked")){
-                    cmr_roads.setVisible(true);
-                    onOffDuong=true;
+            $("#boundary_points").change(function () {
+                if($("#boundary_points").is(":checked")){
+                    boundary_points.setVisible(true);
+            }
+                else{
+                    boundary_points.setVisible(false);
+                }
+            });
+            $("#boundary_area").change(function () {
+                if($("#boundary_area").is(":checked")){
+                    boundary_area.setVisible(true);
                 }
                 else{
-                    cmr_roads.setVisible(false);
-                    onOffDuong=false;
+                    boundary_area.setVisible(false);
                 }
             });
+            $("#boundary_lines").change(function () {
+                if($("#boundary_lines").is(":checked")){
+                    boundary_lines.setVisible(true);
+                }
+                else{
+                    boundary_lines.setVisible(false);
+                }
+            });
+            $("#historic_battlefield").change(function () {
+                if($("#historic_battlefield").is(":checked")){
+                    his=true;
+                }
+                else{
+                    historic_battlefield.setVisible(false);
+                    his=false;
+                }
+            });
+            $("#theme_park").change(function () {
+                if($("#theme_park").is(":checked")){
+                    park=true;
+                }
+                else{
+                    theme_park.setVisible(false);
+                    park=false;
+                }
+            });
+            $("#hotel_points").change(function () {
+                if($("#hotel_points").is(":checked")){
+                    hotel=true;
+                }
+                else{
+                    hotel_points.setVisible(false);
+                    hotel=false;
+                }
+            });   
     </script>
 </body>
 

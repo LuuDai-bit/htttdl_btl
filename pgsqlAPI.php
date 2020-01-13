@@ -1,182 +1,241 @@
 <?php
-    if(isset($_POST['functionname']))
-    {
-        $connect = initDB();
-        $paSRID = '4326';
-        $paPoint = $_POST['paPoint'];
-        $functionname = $_POST['functionname'];
-        
-        $aResult = "null";
-        if ($functionname == 'toMauDuong')
-            $aResult = toMauDuong($connect, $paSRID, $paPoint);
-        else if ($functionname == 'tinhToanDuong')
-            $aResult = tinhToanDuong($connect, $paSRID, $paPoint);
-        else if ($functionname == 'hienThiDuong')
-            $aResult = hienThiDuong($connect, $paSRID, $paPoint);
-        else if ($functionname == 'toMauVung')
-            $aResult = toMauVung($connect, $paSRID, $paPoint);
-        else if ($functionname == 'hienThiVung')
-            $aResult = hienThiVung($connect, $paSRID, $paPoint);
-
-        echo $aResult;
-    
-        closeDB($connect);
-    }
-    function initDB()
-    {
-        // Kết nối CSDL
-        $host = 'localhost';
-        $database = 'example';
-        $port = '5432';
-        $user = 'postgres';
-        $password = 'HTTTDL58TH1';
-        $db_connection = pg_connect("host=$host port=$port dbname=$database  user=$user password= $password") or die('Could not connect: ' . pg_last_error());;
-        return $db_connection;
-    }
-    function my_query($conn, $query)
-    {
-        if(func_num_args() == 2){
-            $que=pg_query($conn, $query);
-            $fet=pg_fetch_all($que);
-            return $fet ;
-        }
-
-        $args = func_get_args();
-        $params = array_splice($args, 2);
-        $q=pg_query_params($conn, $query, $params);
-        $f=pg_fetch_all($q);
-        return  $f;
-    }
-    function closeDB($connect)
-    {
-        // Ngắt kết nối
-        pg_close($connect);
-    }
-    function hienThiVung($connect,$paSRID,$paPoint)
-    {
-    
-        $paPoint = str_replace(',', ' ', $paPoint);
-        $mySQLStr = "SELECT id_1, shape_leng, shape_area from cmr_adm1 where ST_Within('SRID=".pg_escape_string($paSRID).";".pg_escape_string($paPoint)."'::geometry,geom)";
-        $result = my_query($connect, $mySQLStr);
-        if ($result != null)
-        {
-            $resFin = '<table>';
-            // Lặp kết quả
-            foreach ($result as $item){
-                $resFin = $resFin.'<tr><td>id_1: '.$item['id_1'].'</td></tr>';
-                $resFin = $resFin.'<tr><td>Chu vi: '.$item['shape_leng'].'</td></tr>';
-                $resFin = $resFin.'<tr><td>Diện tích: '.$item['shape_area'].'</td></tr>';
-                break;
-            }
-            $resFin = $resFin.'</table>';
-            return $resFin;
-        }
-        else
-            return "null";
-    }
-    function toMauVung($connect,$paSRID,$paPoint)
-    {
-
-        $paPoint = str_replace(',', ' ', $paPoint);
-    
-        $mySQLStr = "SELECT ST_AsGeoJson(geom) as geo from \"cmr_adm1\" where ST_Within('SRID=".pg_escape_string($paSRID).";".pg_escape_string($paPoint)."'::geometry,geom)";
-
-        $result = my_query($connect, $mySQLStr);
-        if ($result != null)
-        {
-            // Lặp kết quả
-            foreach ($result as $item){
-                return $item['geo'];
-            }
-        }
-        else
-            return "null";
-    }
-    function toMauDuong($connect,$paSRID,$paPoint)
-    {
-      
-        $paPoint = str_replace(',', ' ', $paPoint);
-        $strDistance = "ST_Distance('".$paPoint."',ST_AsText(geom))";
-        $strMinDistance = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) as huhu   from cmr_roads";
-        $mySQLStr = "SELECT ST_AsGeoJson(geom) as geo from cmr_roads where cast(".$strDistance." as text) = ($1) and ".$strDistance." < 0.05";
-        $QstrMinDistance=my_query($connect,$strMinDistance);
-        foreach($QstrMinDistance as $itemstrMinDistance){
-            $result = my_query($connect, $mySQLStr,$itemstrMinDistance['huhu']);
+if (isset($_POST['functionName'])) {
+    $connect = initDB();
+    $SRID = '4326';
+    $functionName = $_POST['functionName'];
+    $result = 'null';
+    // if ($functionName == 'getInfoToAjax') {
+    //     $result = getInfoToAjax($connect, $paPoint, $tableName, $SRID);
+    // }
+    switch ($functionName) {
+        case 'getInfoToAjax':
+            $paPoint = $_POST['paPoint'];
+            $tableName = $_POST['tableName'];
+            $result = getInfoToAjax($connect, $paPoint, $tableName, $SRID);
             break;
-
-        }
-        if ($result != null)
-        {
-            // Lặp kết quả
-            foreach ($result as $item){
-                return $item['geo'];
-            }
-        }
-        else
-            return "null";
-    }
-    
-    function hienThiDuong($connect,$paSRID,$paPoint){
-        $paPoint1 = str_replace(',', ' ', $paPoint);
-        echo $paPoint1;
-        $strDistance1 = " ST_Distance('".$paPoint1."',ST_AsText(geom))";
-        $strMinDistance1 = "SELECT min(".$strDistance1.") as haha from cmr_roads;";
-        $info ="SELECT * from cmr_roads where cast(".$strDistance1." as text) = ($1) and ".$strDistance1."< 0.05";
-        $a=my_query($connect,$strMinDistance1) ;
-        foreach($a as $item){
-             $result1 = my_query($connect, $info,$item['haha']);
+        case 'getBoundary':
+            $tableName = $_POST['tableName'];
+            $result = getBoundary($connect, $tableName);
             break;
-        };
-        
-        if ($result1 != null)
-        {
-            $resFin1 = '<table>';
-            // Lặp kết quả
-            foreach ($result1 as $item){
-                $resFin1 = $resFin1.'<tr><td>gid: '.$item['gid'].'</td></tr>';
-                $resFin1 = $resFin1.'<tr><td> med_descri: '.$item['med_descri'].'</td></tr>';
-                $resFin1 = $resFin1.'<tr><td> rtt_descri: '.$item['rtt_descri'].'</td></tr>';
-                $resFin1 = $resFin1.'<tr><td> f_code_des: '.$item['f_code_des'].'</td></tr>';
-                $resFin1 = $resFin1.'<tr><td> iso: '.$item['iso'].'</td></tr>';
-                $resFin1 = $resFin1.'<tr><td> isocountry: '.$item['isocountry'].'</td></tr>';
-                break;
-            }
-            $resFin1 = $resFin1.'</table>';
-            return $resFin1;
-        }
-        else
-            return "null";
+        case 'getInfoArea':
+            $paPoint = $_POST['paPoint'];
+            $admLevel = $_POST['admLevel'];
+            $result = getInfoArea($connect, $paPoint, $SRID, $admLevel);
+            break;
+        case 'getExtraInfoArea':
+            $paPoint = $_POST['paPoint'];
+            $admLevel = $_POST['admLevel'];
+            $result = getExtraInfoArea($connect, $paPoint, $SRID, $admLevel);
+            break;
+        case 'st_distance':
+            $point1 = $_POST['paPoint1'];
+            $point2 = $_POST['paPoint2'];
+            $result = st_distance($connect, $point1, $point2);
+            break;
+        case 'st_area':
+            $pointsArr = $_POST['paPoint'];
+            $result = st_area($connect, $pointsArr);
+            break;
+        case 'st_length':
+            $pointsArr = $_POST['paPoint'];
+            $result = st_length($connect, $pointsArr);
+            break;
+        default:
+            $result = 'wrong functionName';
     }
-    function tinhToanDuong($connect,$paSRID,$paPoint)
-    {
-        //echo $paPoint;
-        //echo "<br>";
-        $paPoint = str_replace(',', ' ', $paPoint);
-        //echo $paPoint;
-        //echo "<br>";
-        $strDistance = "ST_Distance('".$paPoint."',ST_AsText(geom))";
-        $strMinDistance = "SELECT min(ST_Distance('".$paPoint."',ST_AsText(geom))) as haha from cmr_roads";
-        $mySQLStr = "SELECT gid, ST_Length(geom) as leng from cmr_roads where cast(".$strDistance." as text) = ($1) and ".$strDistance." < 0.05";
-        
-        $a=my_query($connect,$strMinDistance) ;
-        
-        foreach($a as $item){
-            $result = my_query($connect, $mySQLStr,$item['haha']);
-        };
-        
-        if ($result != null)
-        {
-            $resFin = '<table>';
-            // Lặp kết quả
-            foreach ($result as $item){
-                $resFin = $resFin.'<tr><td>Mã đối tương: '.$item['gid'].'</td></tr>';
-                $resFin = $resFin.'<tr><td>Chiều dài: '.$item['leng'].'</td></tr>';
-                break;
-            }
-            $resFin = $resFin.'</table>';
-            return $resFin;
+    echo $result;
+    // closeDB($paPoint);
+    pg_close($connect);
+}
+/**
+ * Tao doi tuong PDO co san thong tin ket noi
+ * returns doi tuong PDO cua co so du lieu
+ */
+function initDB()
+{
+    $host = 'localhost';
+    $database = 'BTL_DB';
+    $port = '5432';
+    $user = 'postgres';
+    $password = 'HTTTDL58TH1';
+    $options = '--client_encoding=latin1';
+    // Kết nối CSDL
+    $db_connection = pg_connect("host=$host port=$port dbname=$database user=$user password=$password options=$options")
+        or die('Could not connect ' . pg_last_error());
+    return $db_connection;
+}
+/**
+ * truy van sql vao co so du lieu
+ * $paPDO doi tuong co so du lieu
+ * $query cau lenh truy van co the bind parameters
+ *  vidu: select * from $1 where $2 = value
+ *  Cac parameter truyen theo ham
+ *  vidu: query($conn, $query, '10', '20');
+ * returns ket qua cua truy van
+ */
+function query($conn, $query, ...$params)
+{
+    // $args = func_get_args();
+    // $params = array_slice($args, 2);
+    $q = null;
+    // if ($params == null || count($params) == 0) {
+    //     $q = pg_query($conn, $query);
+    // } else {
+    //     $q = pg_query_params($conn, $query, $params);
+    // }
+    $q = pg_query_params($conn, $query, $params);
+    $f = pg_fetch_all($q);
+    return $f;
+}
+/**
+ * dong ket noi co so du lieu
+ */
+function closeDB($conn)
+{
+    pg_close($conn);
+}
+/**
+ * lay ra tat ca cac bang trong co so du lieu
+ * $con PDO csdl
+ * returns cot ten cac bang trong co so du lieu
+ */
+function getTables($con)
+{
+    $sql = "SELECT table_name
+            from information_schema.tables 
+            where table_type = 'BASE TABLE' and table_schema='public' 
+                and table_name != 'spatial_ref_sys';";
+    $result = query($con, $sql);
+    // log debug
+    $array = [];
+    if ($result != null) {
+        foreach ($result as $row) {
+            array_push($array, $row['table_name']);
         }
-        else
-            return "null";
     }
-?>
+    // return '['.implode(', ', $array).']';
+    return json_encode($array);
+    // return $array;
+}
+/**
+ * lay ra bien cua layout tu bang trong co so du lieu
+ * $con PDO csdl
+ * $tableName ten bang (layout)
+ * returns mang gia tri [minX, minY, maxX, maxY]
+ */
+function getBoundary($con, $tableName)
+{
+    $tableName = pg_escape_string($tableName);
+    $sql = "SELECT st_extent(geom) as boundary from $tableName;";
+    $result = query($con, $sql);
+    $result = $result[0]['boundary'];
+    $firstPos = strpos($result, '(');
+    $lastPos = strpos($result, ')');
+    $str = substr($result, $firstPos + 1, $lastPos - $firstPos - 1);
+    $str = str_replace(',', ' ', $str);
+    $arr = explode(' ', $str);
+    return json_encode($arr);
+}
+/**
+ * hien thi thong tin diem
+ */
+function getInfoToAjax($con, $paPoint, $tableName, $SRID)
+{
+    if ($SRID == null || $SRID == 0) {
+        $SRID = '4326';
+    }
+    $paPoint = str_replace(',', ' ', $paPoint);
+    $sql = "SELECT osm_id
+        from $tableName
+        where st_within($1::geometry, geom);";
+    $result = query($con, $sql, "SRID=$SRID;$paPoint");
+    return json_encode($result);
+}
+/**
+ * truy van thong tin vung
+ * $paPoint: diem can truy van. $admLevel ['2' => 'country', '4' => 'city/province', '6' => 'district', '5,8,9,10,11,12' => 'others']
+ * tra ve: ten vung, dien tich(kilomet vuong - string), so san bay(string):LK:./, so ngan hang(string)
+ * vidu: {"name":"Hà Nội","area":"3370.82963823946","airports":"2","banks":"54"}
+ */
+function getInfoArea($conn, $paPoint, $SRID, $level)
+{
+    // chuan bi truy van
+    if ($SRID == null || $SRID == 0) {
+        $SRID = '4326';
+    }
+    $paPoint = str_replace(',', ' ', $paPoint);
+    // truy van ten, dien tich, geom cua vung
+    $sql1 =
+        "SELECT name, st_area(geom::geography) / pow(10,6) as area, geom
+        from boundary_area 
+        where st_within($1, geom) and admin_leve = $2
+        limit 1;";
+    $query1 = query($conn, $sql1, "SRID=$SRID;$paPoint", $level)[0];
+    // dem so san bay cua vung
+    $sql2 =
+        "SELECT count(*) as airports from airport_points
+        where st_within(geom, $1);";
+    $query2 = query($conn, $sql2, $query1['geom'])[0];
+    // dem so ngan hang
+    $sql3 =
+        "SELECT count(*) as banks from world_bank_aid_points
+        where st_within(geom, $1);";
+    $query3 = query($conn, $sql3, $query1['geom'])[0];
+    // gom ket qua
+    $result = array_merge(array_slice($query1, 0, 2), $query2, $query3);
+    return json_encode(($result),JSON_UNESCAPED_UNICODE);
+}
+/**
+ * truy van thong tin them cua vung
+ * tra ve: dan so, dien tich(km2 - string)
+ * vi du: {"population":"7587800","area":"3370.82963823946"}
+ */
+function getExtraInfoArea($conn, $paPoint, $SRID, $admLevel)
+{
+    // chuan bi truy van
+    if ($SRID == null || $SRID == 0) {
+        $SRID = '4326';
+    }
+    $paPoint = str_replace(',', ' ', $paPoint);
+    $sql1 =
+        "SELECT population, st_area(geom::geography) / pow(10,6) as area
+        from boundary_area 
+        where st_within($1, geom) and admin_leve = $2
+        limit 1;";
+    $query1 = query($conn, $sql1, $paPoint, $admLevel)[0];
+    $result = $query1;
+    return json_encode($result,JSON_UNESCAPED_UNICODE);
+}
+/**
+ * tinh khoang cach
+ * dau vao point1, point2
+ * vi du POINT(0 1), POINT(0 0)
+ * tra ve khoang cach don vi met
+ */
+function st_distance($conn, $point1, $point2)
+{
+    $sql = "SELECT st_distance($1::geography, $2::geography);";
+    $result = query($conn, $sql, $point1, $point2);
+    return $result[0]['st_distance'];
+}
+/**
+ * tinh chieu dai cac diem
+ * dau vao la cac diem can cua duong
+ */
+function st_length($conn, $pointsArr)
+{
+    $sql = "SELECT st_length($1::geography);";
+    $result = query($conn, $sql, $pointsArr);
+    // echo($sql);
+    return $result[0]['st_length'];
+}
+/**
+ * tinh dien tich cac diem
+ * dau vao la cac diem cua bien polygon
+ */
+function st_area($conn, $pointsArr)
+{
+    $sql = "SELECT st_area($1::geography);";
+    $result = query($conn, $sql, $pointsArr);
+    return $result[0]['st_distance'];
+}
