@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/libs/openlayers/css/ol.css" type="text/css" />
     <script src="/libs/openlayers/build/ol.js" type="text/javascript"></script>
     <script src="/libs/jquery/jquery-3.4.1.min.js" type="text/javascript"></script>
+    <script src="script.js" type="text/javascript"></script>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -127,13 +128,16 @@
             //     //source: vectorSource,
             //     style: styleFunction
             // });
-            // map.addLayer(vectorLayer);
+            map.addLayer(vectorLayer);
             map.on('singleclick', function(e) {
                 var lonlat = ol.proj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326');
                 var lon = lonlat[0];
                 var lat = lonlat[1];
                 var myPoint = 'POINT(' + lon + ' ' + lat + ')';
                 console.log('request: ' + myPoint);
+                // highlightMultiPoint(lon, lat);
+                // highlightLineString(lon, lat);
+                highlightPolygon(lon, lat);
                 $.ajax({
                     type: "POST",
                     url: "pgsqlAPI.php",
@@ -144,7 +148,7 @@
                         admLevel: 4
                     },
                     success: function(result, status, error) {
-                        console.log(result);
+                        // console.log(result);
                     },
                     error: function(req, status, error) {
                         console.log(req + "\n" + status + "\n" + error);
@@ -160,7 +164,7 @@
                         admLevel: 4
                     },
                     success: function(result, status, error) {
-                        console.log(result);
+                        // console.log(result);
                     },
                     error: function(req, status, error) {
                         console.log(req + "\n" + status + "\n" + error);
