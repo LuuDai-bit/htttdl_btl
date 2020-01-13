@@ -1,5 +1,5 @@
 var mode=true;
-var dienTich=true;
+var cheDo="dientich";
 function Caculate(m){
     mode=m;
     if(mode){
@@ -21,6 +21,7 @@ function Perimeter(){
     document.getElementById("submit").style.background= "#6c757d";
     document.getElementById("Distance").style.background= "#6c757d";
     document.getElementById("Acreage").style.background= "#6c757d";
+    cheDo='chuvi';
 }
 function Acreage(){
     dienTich=true;
@@ -28,12 +29,14 @@ function Acreage(){
     document.getElementById("Acreage").style.background= "#6c757d6e";
     document.getElementById("Distance").style.background= "#6c757d";
     document.getElementById("submit").style.background= "#6c757d";
+    cheDo='dientich';
 }
 function Distance(){
     document.getElementById("Distance").style.background= "#6c757d6e";
     document.getElementById("Acreage").style.background= "#6c757d";
     document.getElementById("Perimeter").style.background= "#6c757d";
     document.getElementById("submit").style.background= "#6c757d";
+    cheDo='khoangcach';
 }
 var arrayPoints=[];
 function tinhDienTich(point){
@@ -43,7 +46,7 @@ function submit(){
     document.getElementById("submit").style.background= "#6c757d6e";
     if(arrayPoints.length <= 1) return;
     let ham = 'st_distance';
-    if(arrayPoints.length>2 && dienTich){
+    if(arrayPoints.length>2 && cheDo=='dientich'){
         arrayPoints.push(arrayPoints[0]);
         ham = 'st_area';
         let str = convertArrayToPolygon(arrayPoints);
@@ -60,7 +63,7 @@ function submit(){
             }
         });
     } 
-    if(arrayPoints.length>2 && !dienTich){
+    if(arrayPoints.length>2 && cheDo=='chuvi'){
         console.log(arrayPoints);
         // arrayPoints.push(arrayPoints[0]);
         console.log(arrayPoints);
@@ -79,7 +82,7 @@ function submit(){
             }
         });
     }    
-    else{
+    else if(cheDo=='khoangcach'){
         var myPoint1='POINT(' + arrayPoints[0].longtitude + ' ' + arrayPoints[0].latitude + ')';
         var myPoint2='POINT(' + arrayPoints[1].longtitude + ' ' + arrayPoints[1].latitude + ')';
         $.ajax({
