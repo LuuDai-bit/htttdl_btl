@@ -40,7 +40,7 @@
     csLog($call2);
 
     //  #test getInfoArea
-    $paPoint = 'SRID=4326;POINT(105.91 21.3)';
+    $paPoint = 'POINT(105.91 21.3)';
     $call3 = getInfoArea($G_con, $paPoint, 4326, 4);
     csLog($call3);
 
@@ -139,9 +139,25 @@
                     url: "pgsqlAPI.php",
                     //dataType: 'json',
                     data: {
-                        functionName: 'getInfoToAjax',
-                        tableName: 'boundary_area',
-                        paPoint: myPoint
+                        functionName: 'getInfoArea',
+                        paPoint: myPoint,
+                        admLevel: 4
+                    },
+                    success: function(result, status, error) {
+                        console.log(result);
+                    },
+                    error: function(req, status, error) {
+                        console.log(req + "\n" + status + "\n" + error);
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "pgsqlAPI.php",
+                    //dataType: 'json',
+                    data: {
+                        functionName: 'getExtraInfoArea',
+                        paPoint: myPoint,
+                        admLevel: 4
                     },
                     success: function(result, status, error) {
                         console.log(result);

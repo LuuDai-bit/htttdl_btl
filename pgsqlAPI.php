@@ -162,7 +162,7 @@ function getInfoArea($conn, $paPoint, $SRID, $level)
         from boundary_area 
         where st_within($1, geom) and admin_leve = $2
         limit 1;";
-    $query1 = query($conn, $sql1, $paPoint, $level)[0];
+    $query1 = query($conn, $sql1, "SRID=$SRID;$paPoint", $level)[0];
 
     // dem so san bay cua vung
     $sql2 =
@@ -178,7 +178,7 @@ function getInfoArea($conn, $paPoint, $SRID, $level)
 
     // gom ket qua
     $result = array_merge(array_slice($query1, 0, 2), $query2, $query3);
-    return json_encode($result);
+    return json_encode($result, JSON_UNESCAPED_UNICODE);
 }
 /**
  * truy van thong tin them cua vung
@@ -198,10 +198,10 @@ function getExtraInfoArea($conn, $paPoint, $SRID, $admLevel)
         from boundary_area 
         where st_within($1, geom) and admin_leve = $2
         limit 1;";
-    $query1 = query($conn, $sql1, $paPoint, $admLevel)[0];
+    $query1 = query($conn, $sql1, "SRID=$SRID;$paPoint", $admLevel)[0];
 
     $result = $query1;
-    return json_encode($result);
+    return json_encode($result, JSON_UNESCAPED_UNICODE);
 }
 /**
  * tinh khoang cach
