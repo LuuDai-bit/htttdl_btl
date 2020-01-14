@@ -1,0 +1,130 @@
+#map{
+    width: 75vw; height: 100vh;box-shadow: 5px 5px 10px 8px #888888; 
+}
+.ol-popup {
+    position: absolute;
+    background-color:#dfe1e3;
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 280px;
+}
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+.ol-popup-closer:after{
+    content: "✖";
+    color:#37474f
+}
+#LoaderBalls__item3 {
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #37474f; 
+    animation: bouncing 0.4s alternate infinite;
+}
+#LoaderBalls__item4{
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #37474f; 
+    animation: bouncing 0.4s 0.1s alternate infinite;
+}
+#LoaderBalls__item5{
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #37474f; 
+    animation: bouncing 0.4s 0.2s alternate infinite;
+}
+#broad{
+    position:absolute;
+    top:5px;height:80%;width:70%;
+    left:25px;
+    bottom:25px;
+    right:70px;
+    animation: moved 0.7s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display:none;
+    box-sizing: border-box;
+    background-color:#ced7db ;
+    overflow: scroll;
+}
+#broad1{
+    position:absolute;
+    height:350px;width:330px;
+    top:30%;
+    right:0px;
+    animation: moved1 1.2s;
+    display:none;
+    box-sizing: border-box;
+}
+.layer{
+    position:absolute;
+    top:5px;
+    right:0px;
+    background-color:#ced7db;
+}
+.layer-child{
+    animation: movedL 1s;
+    text-align: center;
+}
+.Feature{
+    position:absolute;
+    top:170px;
+    right:0px;
+    background-color:#ced7db;
+    width:330px;
+}
+#Information{
+    background-color:#6c757d6e;
+}
+#xemthem{
+    cursor: pointer;
+}
+ @keyframes bouncing {
+    0% {
+        transform: translate3d(0, 8px, 0) scale(1.2, 0.85);
+     }
+    100% {
+        transform: translate3d(0, -20px, 0) scale(0.9, 1.1);
+    }
+}
+@keyframes moved {
+    0% {
+        top:15px;height:100px;width:200px;
+     }
+    100% {
+        height:80%;width:70%;
+    }
+}
+@keyframes moved1 {
+    0% {
+        top:15px;height:100px;width:10px;
+     }
+     50%{
+        top:30%;height:10px;width:100px;
+     }
+    100% {
+        top:40%;height:550px;width:250px;
+    }
+}
+@keyframes movedL {
+    0% {
+        top:15px;height:0%;width:0%;
+     }
+    50% {
+        top:15px;height:50%;width:50%;
+     }
+    100% {
+        top:15px;height:100%;width:100%;
+    }
+}  
