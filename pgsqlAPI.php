@@ -28,6 +28,10 @@ if (isset($_POST['functionName'])) {
             $admLevel = $_POST['admLevel'];
             $result = getExtraInfoArea($connect, $paPoint, $SRID, $admLevel);
             break;
+        case 'getExtraTravelPoints':
+            $geom = $_POST['geom'];
+            $result = getExtraTravelPoints($conn, $geom);
+            break;
         default:
             $result = 'wrong functionName';
     }
@@ -228,4 +232,42 @@ function st_length($conn, $pointsArr)
  */
 function st_area($conn, $pointsArr)
 {
+}
+function getExtraTravelPoints($conn, $geom)
+{
+    $sql1 =
+        "SELECT name from theme_park 
+    where st_within(geom, $1);";
+    $query1 = query($conn, $sql1, $geom);
+
+    $sql2 =
+        "SELECT name from hotel_points
+    where st_within(geom, $1);";
+    $query2 = query($conn, $sql2, $geom);
+
+    $sql3 =
+        "SELECT name from historic_battlefield
+    where st_within(geom, $1);";
+    $query3 = query($conn, $sql3, $geom);
+
+    $result = [];
+    if ($query1 != false) {
+        foreach ($query1 as $item) {
+            if($item['name'] != null)
+            array_push($result, $item['name']);
+        }
+    }
+    if ($query2 != false) {
+        foreach ($query2 as $item) {
+            if($item['name'] != null)
+            array_push($result, $item['name']);
+        }
+    }
+    if ($query3 != false) {
+        foreach ($query2 as $item) {
+            if($item['name'] != null)
+            array_push($result, $item['name']);
+        }
+    }
+    return json_encode($result, JSON_UNESCAPED_UNICODE);
 }

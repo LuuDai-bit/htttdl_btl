@@ -48,6 +48,11 @@
     // #test getExtraInfoArea
     $call4 = getExtraInfoArea($G_con, $paPoint, 4326, 4);
     csLog($call4);
+    $geom = query($G_con, "select geom from boundary_area where gid='58';")[0]['geom'];
+    csLog($geom);
+    // #test getExtraTravelPoints
+    $call5 = getExtraTravelPoints($G_con, $geom);
+    csLog($call5);
     ?>
     <script>
         <?php
@@ -55,11 +60,14 @@
             echo "var arr2 = $call2;\n";
             echo "var arr3 = $call3;\n";
             echo "var arr4 = $call4;\n";
+            echo "var arr5 = $call5;\n";
+
         ?>
         console.log(arr1);
         console.log(arr2);
         console.log(arr3);
         console.log(arr4);
+        console.log(arr5);
     </script>
     <script>
         <?php
