@@ -115,8 +115,8 @@ function convertArrayToPolygon(){
     let polygon_data = 'MULTIPOLYGON(((';
     for(let i = 0; i < arrayPoints.length; i++){
         polygon_data  = polygon_data + 
-        arrayPoints[i]["longtitude"] + ' ' + arrayPoints[i]['latitude'] + ' '
-        ;
+        arrayPoints[i]["longtitude"] + ' ' + arrayPoints[i]['latitude'];
+        if(i != arrayPoints.length-1) polygon_data+= ', ';
     }
     polygon_data += ')))';
     console.log(polygon_data);
