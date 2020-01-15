@@ -169,6 +169,9 @@
                 }
             }),
         });
+
+        
+
         
         function initinizeMap(){
             document.getElementById("close").onclick = function() {
@@ -240,6 +243,7 @@
             })
             map.on("moveend", function() {
                 var zoom = parseInt(map.getView().getZoom(),10);
+                console.log(zoom);
                 if(zoom>=8 && hotel==true){
                     hotel_points.setVisible(true);
                 }

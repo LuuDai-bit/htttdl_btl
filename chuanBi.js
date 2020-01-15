@@ -1,4 +1,5 @@
-var adm_leve;
+var adm_leve = 2;
+document.getElementById("country").style.background= "#6c757d6e";
 var mapDefaultZoom = 6;
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
@@ -9,6 +10,7 @@ var overlay = new ol.Overlay({
 });
 var hotel=false;var his=false;var park=false;
 function reset1(){
+    adm_leve = 2;
     document.getElementById("LoaderBalls__item3").style.display = "block";
     document.getElementById("LoaderBalls__item4").style.display = "block";
     document.getElementById("LoaderBalls__item5").style.display = "block";
@@ -20,8 +22,9 @@ function reset1(){
     document.getElementById("submit").style.background= "#6c757d";
     document.getElementById("city").style.background= "#6c757d";
     document.getElementById("district").style.background= "#6c757d";
-    document.getElementById("country").style.background= "#6c757d";
+    document.getElementById("country").style.background= "#6c757d6e";
     document.getElementById("xemthem").style.display= "none";
+    document.getElementById("broad1").style.display="none";
     
 }
 function country(){
@@ -54,7 +57,7 @@ var hotel_styles = new ol.style.Style({
         anchor: [0.5, 0.5],
         anchorXUnits: "fraction",
         anchorYUnits: "fraction",
-        src: "../icons8-condo-48.png",
+        src: "./icons8-condo-48.png",
     })
 });
 var historic_battlefield_styles = new ol.style.Style({
@@ -62,7 +65,7 @@ var historic_battlefield_styles = new ol.style.Style({
         anchor: [0.5, 0.5],
         anchorXUnits: "fraction",
         anchorYUnits: "fraction",
-        src: "../icons8-mark-iv-tank-48.png",
+        src: "./icons8-mark-iv-tank-48.png",
     })
 });
 var theme_park_styles = new ol.style.Style({
@@ -70,26 +73,26 @@ var theme_park_styles = new ol.style.Style({
         anchor: [0.5, 0.5],
         anchorXUnits: "fraction",
         anchorYUnits: "fraction",
-        src: "../icons8-theme-park-48.png",
+        src: "./icons8-theme-park-48.png",
     })
 });
 var hotel_points = new ol.layer.Vector({
     source: new ol.source.Vector({
-        url: '../data/countries.geojson',
+        url: 'data2/countries.geojson',
         format: new ol.format.GeoJSON()
     }),
     style:hotel_styles
 });
 var historic_battlefield = new ol.layer.Vector({
     source: new ol.source.Vector({
-        url: '../data/historic_battlefield.geojson',
+        url: 'data2/historic_battlefield.geojson',
         format: new ol.format.GeoJSON()
     }),
     style:historic_battlefield_styles
 });
 var theme_park = new ol.layer.Vector({
     source: new ol.source.Vector({
-        url: '../data/theme_park.geojson',
+        url: 'data2/theme_park.geojson',
         format: new ol.format.GeoJSON()
     }),
     style:theme_park_styles
